@@ -1,0 +1,12 @@
+<layer-list>
+    <item drawable="background_candidate_state.xml"
+
+        left="0dp"
+
+        right="0dp"
+
+        top="0dp"
+
+        bottom="0dp"
+     />
+</layer-list>

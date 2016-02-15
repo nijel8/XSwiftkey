@@ -1,0 +1,5 @@
+<selector>
+    <item shift_state_unshifted="true" drawable="icon_shift_inactive.png" />
+    <item shift_state_shifted="true" drawable="icon_shift_active.png" />
+    <item shift_state_capslocked="true" drawable="icon_shift_locked.png" />
+</selector>

@@ -1,0 +1,137 @@
+{
+    "images": [
+        {
+            "filename": "icon_arrow_left.svg",
+            "resize": {
+                "format": "xhdpi",
+                "dpi": 9
+            }
+        },
+        {
+            "filename": "icon_arrow_right.svg",
+            "resize": {
+                "format": "xhdpi",
+                "dpi": 9
+            }
+        },
+        {
+            "filename": "icon_arrow_up.svg",
+            "resize": {
+                "format": "xhdpi",
+                "dpi": 9
+            }
+        },
+        {
+            "filename": "icon_arrow_down.svg",
+            "resize": {
+                "format": "xhdpi",
+                "dpi": 9
+            }
+        },
+        {
+            "filename": "icon_delete.svg",
+            "resize": {
+                "format": "xhdpi",
+                "dpi": 9
+            }
+        },
+        {
+            "filename": "icon_enter.svg",
+            "resize": {
+                "format": "xhdpi",
+                "dpi": 9
+            }
+        },
+        {
+            "filename": "icon_go.svg",
+            "resize": {
+                "format": "xhdpi",
+                "dpi": 9
+            }
+        },
+        {
+            "filename": "icon_logo.svg",
+            "resize": {
+                "format": "xhdpi",
+                "dpi": 9
+            }
+        },
+        {
+            "filename": "icon_microphone.svg",
+            "resize": {
+                "format": "xhdpi",
+                "dpi": 9
+            }
+        },
+        {
+            "filename": "icon_next.svg",
+            "resize": {
+                "format": "xhdpi",
+                "dpi": 9
+            }
+        },
+        {
+            "filename": "icon_qwerty_view.svg",
+            "resize": {
+                "format": "xhdpi",
+                "dpi": 9
+            }
+        },
+        {
+            "filename": "icon_search.svg",
+            "resize": {
+                "format": "xhdpi",
+                "dpi": 9
+            }
+        },
+        {
+            "filename": "icon_send.svg",
+            "resize": {
+                "format": "xhdpi",
+                "dpi": 9
+            }
+        },
+        {
+            "filename": "icon_shift_inactive.svg",
+            "resize": {
+                "format": "xhdpi",
+                "dpi": 9
+            }
+        },
+        {
+            "filename": "icon_shift_active.svg",
+            "resize": {
+                "format": "xhdpi",
+                "dpi": 9
+            }
+        },
+        {
+            "filename": "icon_smiley.svg",
+            "resize": {
+                "format": "xhdpi",
+                "dpi": 9
+            }
+        },
+        {
+            "filename": "icon_tab.svg",
+            "resize": {
+                "format": "xhdpi",
+                "dpi": 9
+            }
+        },
+        {
+            "filename": "icon_languages.svg",
+            "resize": {
+                "format": "xhdpi",
+                "dpi": 9
+            }
+        },
+        {
+            "filename": "icon_space_openbox.svg",
+            "resize": {
+                "format": "xhdpi",
+                "dpi": 9
+            }
+        }
+    ]
+}

@@ -1,0 +1,31 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 22
+    buildToolsVersion '23.0.2'
+
+    defaultConfig {
+        applicationId "bg.nijel.xswiftkey"
+        minSdkVersion 14
+        targetSdkVersion 22
+        versionCode 1
+        versionName "1.0"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            zipAlignEnabled true
+        }
+    }
+}
+
+if(project.hasProperty("MySigningConfig.signing")
+        && new File(project.property("MySigningConfig.signing") + ".gradle").exists()) {
+    apply from: project.property("MySigningConfig.signing") + ".gradle";
+}
+
+dependencies {
+    provided fileTree(dir: 'libs', include: ['*.jar'])
+}

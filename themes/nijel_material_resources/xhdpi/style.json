@@ -1,0 +1,79 @@
+{
+    "version": 2,
+    "id": "titanium_resources",
+    
+    "icons": [
+        {
+            "name": "DeleteKey",
+            "icon": "icon_delete.png"
+        },
+        {
+            "name": "ShiftKey",
+            "icon": "icon_shift.xml"
+        },
+        {
+            "name": "leftArrow",
+            "icon": "icon_arrow_left.png"
+        },
+        {
+            "name": "rightArrow",
+            "icon": "icon_arrow_right.png"
+        },
+        {
+            "name": "upArrow",
+            "icon": "icon_arrow_up.png"
+        },
+        {
+            "name": "downArrow",
+            "icon": "icon_arrow_down.png"
+        },
+        {
+            "name": "CommaKey",
+            "icon": "icon_microphone.png"
+        },
+        {
+            "name": "Settings123Key",
+            "icon": "icon_logo.png"
+        },
+        {
+            "name": "SettingsKey",
+            "icon": "icon_logo.png"
+        },
+        {
+            "name": "IMEGoKeyTop",
+            "icon": "icon_imego_top.xml"
+        },
+        {
+            "name": "IMEGoKey",
+            "icon": "icon_imego.xml"
+        },
+        {
+            "name": "TabKey",
+            "icon": "icon_tab.png"
+        },
+        {
+            "name": "EnterKey",
+            "icon": "icon_enter.xml"
+        },
+        {
+            "name": "SpaceKey",
+            "icon": "transparent.xml"
+        },
+        {
+            "name": "SpaceKey_OpenBox",
+            "icon": "icon_space_openbox.png"
+        },
+        {
+            "name": "SplitLayoutKeyQWERTY",
+            "icon": "icon_qwerty_view.png"
+        },
+        {
+            "name": "Languages",
+            "icon": "icon_languages.png"
+        },
+        {
+            "name": "Smiley",
+            "icon": "icon_smiley.png"
+        }
+    ]
+}

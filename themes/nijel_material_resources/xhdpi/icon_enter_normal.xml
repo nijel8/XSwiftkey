@@ -1,0 +1,6 @@
+<layer-list>
+    <item
+        drawable="bg_enter_normal.9.png" />
+    <item
+        drawable="icon_enter.9.png" />
+</layer-list>

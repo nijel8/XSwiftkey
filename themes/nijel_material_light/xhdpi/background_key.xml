@@ -1,0 +1,13 @@
+<layer-list>
+    <item
+        drawable="background_key_state.xml"
+
+        left="2dp"
+
+        right="2dp"
+
+        top="2dp"
+
+        bottom="2dp"
+    />
+</layer-list>

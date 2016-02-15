@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">XSwifkey</string>
+    <string name="xposed_desc">Use custom themes with Swiftkey keyboard</string>
+    <string name="pref_category_adjust_keyboard_size_title">Adjust key labels</string>
+    <string name="pref_my_themes_location_title">Select your \"themelist.json\" file</string>
+    <string name="pref_my_themes_location_summary">Set to:</string>
+    <string name="pref_adjust_size_title">Resize key labels</string>
+    <string name="pref_adjust_size_summary">Change key label text size</string>
+    <string name="pref_letter_key_bottom_text_scale_title">Key label scale factor</string>
+    <string name="pref_letter_key_bottom_text_scale_summary">Current value: %s (swiftkey defalt: 0.8)</string>
+    <string name="pref_letter_key_main_text_height_title">Key label height</string>
+    <string name="pref_letter_key_main_text_height_summary">Current value: %s (swiftkey defalt: 0.5)</string>
+    <string name="pref_letter_preview_popup_text_scale_title">Popup key label scale factor</string>
+    <string name="pref_letter_preview_popup_text_scale_summary">Current value: %s (swiftkey defalt: 0.7)</string>
+    <string name="pref_category_apply_title">Apply changes</string>
+    <string name="pref_apply_changes_title">Restart phone</string>
+    <string name="pref_apply_changes_summary">Soft reboot android to apply changes</string>
+    <string name="pref_bringup_keyboard_title">Toggle keyboard</string>
+    <string name="pref_bringup_keyboard_summary">Show/hide keyboard</string>
+    <string name="label_unable_access">Access denied…</string>
+</resources>

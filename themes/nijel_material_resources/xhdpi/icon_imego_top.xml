@@ -1,0 +1,11 @@
+<selector>
+    <item state_activated="true" drawable="icon_smiley.png" />
+    <item state_active="true" drawable="icon_smiley.png" />
+    <item state_checkable="true" drawable="icon_smiley.png" />
+    <item state_checked="true" drawable="icon_smiley.png" />
+    <item state_enabled="true" drawable="icon_smiley.png" />
+    <item state_first="true" drawable="icon_smiley.png" />
+    <item state_focused="true" drawable="icon_smiley.png" />
+    <item state_last="true" drawable="icon_smiley.png" />
+    <item state_middle="true" drawable="icon_enter.xml" />
+</selector>

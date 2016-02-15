@@ -1,0 +1,36 @@
+<layer-list>
+  <item
+
+
+          top="3dp"
+
+          right="0dp"
+
+          bottom="0dp"
+
+          left="0dp"
+>
+    <shape shape="rectangle">
+
+        <padding
+
+            left="4dp"
+
+            right="4dp"
+
+            top="4dp"
+
+            bottom="4dp" />
+
+        <corners
+
+            topLeftRadius="0dp"
+
+            topRightRadius="2dp"
+
+            bottomLeftRadius="0dp"
+
+            bottomRightRadius="2dp" />
+    </shape>
+  </item>
+</layer-list>

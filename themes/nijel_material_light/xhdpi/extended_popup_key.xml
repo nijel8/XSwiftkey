@@ -1,0 +1,4 @@
+<selector>
+    <item state_pressed="true" drawable="extended_popup_key_pressed.9.png" />
+    <item state_pressed="false" drawable="transparent.xml" />
+</selector>

@@ -1,0 +1,11 @@
+{
+    "version": 3,
+    "themes": [
+        {
+            "id": "nijel_material_light", 
+            "name": "Google Material Light",
+            "formatVersion": 3, 
+            "minorVersion": 3
+        }
+    ]
+}

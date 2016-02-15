@@ -1,0 +1,4 @@
+<selector>
+  <item state_pressed="false" drawable="single_shape.xml" />
+  <item state_pressed="true" drawable="single_shape.xml" />
+</selector>

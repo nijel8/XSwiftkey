@@ -1,0 +1,116 @@
+{
+    "version": 2,
+    "id": "nijel_material_light",
+    "name": "Google Material Light",
+    "renderer_id": "recolourable",
+    "dependencies": [
+        "nijel_material_resources"
+    ],
+    "icons_parent": "nijel_material_resources",
+    "background": {
+        "normal": "#eceff1",
+       "candidate": "background_candidates_strip.xml"
+    },
+    "text_styles": [
+        {
+            "style": "bold",
+            "color": "#37474f",
+            "id": "text_style_top"
+        },
+        {
+            "color": "#37474f",
+            "id": "text_style_bottom"
+        },
+        {
+            "color": "#37474f",
+            "id": "text_style_main"
+        },
+        {
+            "color": "#37474f",
+            "id": "text_style_popup"
+        },
+        {
+            "style": "bold",
+            "color": "#747C7F",
+            "id": "text_style_function"
+        }
+    ],
+    "key_styles": [
+        {
+            "id": "baseStyle",
+            "background": "background_key.xml",
+            "seamless_background": "background_key.xml",
+            "text_style_top": "text_style_top",
+            "text_style_bottom": "text_style_bottom",
+            "text_style_main": "text_style_main",
+            "popup_background": "background_popup.9.png",
+            "text_style_popup": "text_style_popup",
+            "minikeyboard_background": "background_popup.9.png",
+            "color": "#37474f"
+        },
+        {
+            "id": "miniKeyboardKeyStyle",
+            "background": "extended_popup_key.xml",
+            "parent": "baseStyle",
+            "seamless_background": "extended_popup_key.xml"
+        },
+        {
+            "id": "topCandidateStyle",
+            "parent": "baseStyle",
+            "background": "background_candidate.xml",
+            "text_style_main": "text_style_top",
+            "seamless_background": "background_candidate.xml"
+        },
+        {
+            "text_style_main": "text_style_main",
+            "id": "candidateStyle",
+            "parent": "topCandidateStyle"
+        },
+        {
+            "id": "functionStyle",
+            "text_style_main": "text_style_function",
+            "parent": "baseStyle"
+        },
+        {
+            "id": "spaceStyle",
+            "parent": "baseStyle",
+            "background": "background_spacebar.xml",
+            "branding_color_filter": "@null"
+        },
+        {
+            "id": "lssbStyle",
+            "parent": "spaceStyle"
+        },
+        {
+            "id": "composingPopupStyle",
+            "parent": "candidateStyle",
+            "text_style_main": "text_style_main",
+            "background_color_filter": "@null",
+            "background": "single_shape_state.xml",
+            "seamless_background": "single_shape_state.xml"
+        },
+        {
+            "id": "extendedCandidateStyle",
+            "parent": "candidateStyle", 
+            "background_color_filter": "@null"
+        },
+        {
+            "id": "extendCandidatesToggleStyle",
+            "parent": "functionStyle",
+            "background_color_filter": "@null"
+        },
+        {
+            "id": "specialStyle",
+            "parent": "baseStyle"
+        }
+    ],
+    "flow": {
+        "trail_type": "legacy",
+        "colors": ["#4db6ac", "#4db6ac"]
+    },
+    "extra_controls": {
+        "flip_tab_left": "flip_left.png",
+        "flip_tab_right": "flip_right.png",
+        "move_tab_bottom": "paddle.png"
+    }
+}

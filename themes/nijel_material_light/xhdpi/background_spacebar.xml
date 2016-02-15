@@ -1,0 +1,4 @@
+<selector>
+    <item state_pressed="false" drawable="background_spacebar_normal.9.png" />
+    <item state_pressed="true" drawable="background_spacebar_pressed.9.png" />
+</selector>

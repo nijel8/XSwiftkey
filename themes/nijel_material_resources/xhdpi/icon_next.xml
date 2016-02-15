@@ -1,0 +1,4 @@
+<selector>
+    <item state_pressed="false" drawable="icon_next_normal.xml" />
+    <item state_pressed="true" drawable="icon_next_pressed.xml" />
+</selector>

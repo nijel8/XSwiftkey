@@ -1,0 +1,21 @@
+<layer-list>
+	
+	<item >
+        <shape shape="rectangle">
+            <solid color="#DCDCDC" />
+        </shape>
+    </item>
+	
+    <item top="2dp" >
+        <shape shape="rectangle">
+            <solid color="#F6F7F8" />
+        </shape>
+    </item>
+    
+    <item bottom="1dp" top="3dp" >
+        <shape shape="rectangle">
+            <solid color="#E4E7E9" />
+        </shape>
+    </item>
+
+</layer-list>
