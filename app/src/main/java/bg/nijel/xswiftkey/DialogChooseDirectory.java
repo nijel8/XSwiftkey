@@ -164,11 +164,11 @@ class DialogChooseDirectory implements OnClickListener, OnItemClickListener {
         return drawable;
     }
 
-    public void onItemClick(AdapterView<?> adapterView, View list, int pos, long id) {
+    public void onItemClick(AdapterView<?> adapterView, View textview, int pos, long id) {
         if (pos >= 0 && pos < this.m_entries.size()) {
             saveScrollView(adapterView);
             if (this.m_entries.get(pos).isFile()) {
-                adapterView.getChildAt(pos).setSelected(true);
+                textview.setSelected(true);
                 mResultJson = this.m_entries.get(pos).getAbsolutePath();
                 mPositiveBtn.setEnabled(true);
             }else {
