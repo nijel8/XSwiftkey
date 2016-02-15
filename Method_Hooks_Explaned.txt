@@ -1,0 +1,327 @@
+Here I will explain what methods are hooked in Swiftkey package so people can help with future module updates.
+
+First I recomend decompile Swiftkey on the phone using ShowJava app from PleyStore and using JaDX as decompler. That way you get almost everething decompiled properly. I say almost b/c we don't get some classes at all, like com.google.common.collect which is Swiftkey version of Google Guava library, but I don't expect anything to brake there.
+
+Forwarding resources for resizing key labels... pretty simple, nothing special here.
+
+Now the fun part. Class by class... Method by method...
+
+1.
+Original class: ThemeManager.java
+Decompiled class: com.touchtype.keyboard.theme.n
+Method:
+protected static File b(Context context) {
+        return new File(com.touchtype.storage.a.b(context), "themes");
+    }
+Returns /data/data/com.touchtype.swiftkey/files/themes -> we return our theme folder like /sdcard/something/themes
+
+2.
+Original class: ThemeManager.java
+Decompiled class: com.touchtype.keyboard.theme.n
+Method:
+public static File h(Context context) {
+        return new File(b(context), "themelist_pre_installed.json");
+    }
+Returns /data/data/com.touchtype.swiftkey/files/themes/themelist_pre_installed.json -> we return our /sdcard/something/themes/themelist.json
+It has to be .../themes/themelist.json b/c we want both downloaded and our themes to work... and those names are hard coded in other places so we dont want brake them
+
+3.
+Original class: ThemeManager.java
+Decompiled class: com.touchtype.keyboard.theme.n
+Method:
+public static e f(Context context) {
+        File h = h(context);
+        if (h.exists()) {
+            try {
+                return (e) net.swiftkey.a.b.e.a(o.b(h, r.c), e.class);
+            } catch (Throwable e) {
+                aj.e("ThemeManager", "error", e);
+            } catch (Throwable e2) {
+                aj.e("ThemeManager", "error", e2);
+            }
+        }
+        return new e();
+    }
+Returns com.touchtype.themes.c.e Object which is added to the MapSet com.google.common.collect.av.a. Here we hook "f" and then we hook ...av.a "b" methods to capture the themes added to the MapSet. And b/c our themelist is parsed two times we get doblicated themes showing in Swiftkey settings. Our themes are type com.touchtype.keyboard.theme.h(preinstalled). Downloaded themes are showing as both type com.touchtype.keyboard.theme.h and type com.touchtype.keyboard.theme.d(downloded) so we get dublicates in Swiftkey theme settings. MapSet element is (theme id, theme type). We don't want downloaded themes as h type so we discard them here if id is not one of our themes and type is h.
+
+4.
+Original class: ThemeManager.java
+Decompiled class: com.touchtype.keyboard.theme.n
+Method:
+private static void r(Context context) {
+        File[] listFiles = b(context).listFiles();
+        if (listFiles != null) {
+            for (File file : listFiles) {
+                if (!(file.getName().equals("themelist.json") || file.getName().equals("themelist_pre_installed.json"))) {
+                    try {
+                        d.a(file);///// deletes all files in themes folder
+                    } catch (IOException e) {
+                        aj.e("ThemeManager", e);
+                    }
+                }
+            }
+        }
+    }
+This method deletes everything in our themes folder if loading themes goes wrong so we block it
+
+5.
+Original class: ThemeManager.java
+Decompiled class: com.touchtype.keyboard.theme.n
+Method:
+ public void i(Context context) {
+        synchronized (this.b) {
+            if (!this.j.containsKey(e(context))) {
+                r(context);
+            }
+            g(context).delete();
+            s(context);
+            l(context);
+        }
+        if (!this.h.containsKey(e(context))) {
+            try {
+                a(t(context), context, false);
+            } catch (Throwable e) {
+                aj.e("ThemeManager", "error", e);
+            }
+        }
+    }
+Another one that deletes everything in our themes folder if our themes are missing from the MapSet so we block it as wel.
+
+6.
+Original class: ThemeManager.java
+Decompiled class: com.touchtype.keyboard.theme.n
+Method:
+private static void a(d dVar, Context context) {
+        File c = c(context);        /////  ExternalStorageDirectory(), "Android/data/" + context.getPackageName() + "/files"
+        if (c == null) {
+            throw new IOException("Cannot access external storage.");
+        }
+        File file = new File(c, String.format("%s.zip", new Object[]{dVar.b()}));    ////  ExternalStorageDirectory(), "Android/data/" + context.getPackageName() + "/files/theme_id.zip
+        if (file.exists()) {
+            net.swiftkey.a.b.a aVar = new net.swiftkey.a.b.a.a();   ////  zip checksum
+            if (dVar.a() == null || !aVar.a(dVar.a(), file)) {     ////   str3... SHA-1 checksum = null or chcksum no match
+                throw new IOException("Checksum failed.");
+            }
+            r(context);
+            new i().a(new FileInputStream(file), b(context));//unzip
+            return;
+        }
+        throw new IOException("Theme doesn't exist.");
+    }
+This method unzips and checksums the downloded themes and since our themes don't have zip files associated with them it just deletes everything in our theme folder(see above). So here we check if is our theme loading and then block this method so only real store themes are unzipped.
+
+7.
+Original class: ThemeManager.java
+Decompiled class: com.touchtype.keyboard.theme.n
+Method:
+private void a(Context context, k kVar) {
+        FileOutputStream fileOutputStream;
+        Throwable e;
+        com.google.common.collect.as.a i = as.i();
+        synchronized (this.b) {
+            for (com.touchtype.themes.c.e.a aVar : o(context).a()) {
+                if (!aVar.a().equals(kVar.b())) {
+                    i.c(aVar);
+                }
+            }
+            try {
+                File g = g(context);
+                o.c(g);
+                fileOutputStream = new FileOutputStream(g);
+                try {
+                    fileOutputStream.write(new com.google.gson.k().b(new e(i.a()), e.class).getBytes(r.c.displayName()));
+                    fileOutputStream.getFD().sync();
+                    fileOutputStream.flush();
+                    g = c(context);
+                    if (g != null) {
+                        d.a(new File(g, String.format("%s.zip", new Object[]{kVar.b()})));
+                    }
+                    try {
+                        fileOutputStream.close();
+                    } catch (Throwable e2) {
+                        aj.d("ThemeManager", "error", e2);
+                    }
+                } catch (IOException e3) {
+                    e2 = e3;
+                    try {
+                        aj.e("ThemeManager", "error", e2);
+                        try {
+                            fileOutputStream.close();
+                        } catch (Throwable e22) {
+                            aj.d("ThemeManager", "error", e22);
+                        }
+                        l(context);
+                    } catch (Throwable th) {
+                        e22 = th;
+                        try {
+                            fileOutputStream.close();
+                        } catch (Throwable e4) {
+                            aj.d("ThemeManager", "error", e4);
+                        }
+                        throw e22;
+                    }
+                }
+            } catch (IOException e5) {
+                e22 = e5;
+                fileOutputStream = null;
+                aj.e("ThemeManager", "error", e22);
+                fileOutputStream.close();
+                l(context);
+            } catch (Throwable th2) {
+                e22 = th2;
+                fileOutputStream = null;
+                fileOutputStream.close();
+                throw e22;
+            }
+            l(context);
+        }
+    }
+This method overwrites our theme list with empty one if loadin theme failes so we just try to recreate the themes MapSet (l(context)) here blocking the overwrite.
+
+8.
+Original class: DownloadedThemeHeader.java
+Decompiled class: com.touchtype.keyboard.theme.d
+Method:
+ private static String f(Context context) {
+        if (new File(n.b(context), "default").isDirectory()) {
+            return "default";
+        }
+        for (File file : n.b(context).listFiles()) {
+            if (!file.getName().endsWith("_resources") && !file.getName().equals("themelist.json") && !file.getName().equals("themelist_pre_installed.json")) {
+                return file.getName();
+            }
+        }
+        return null;
+    }
+This method returns the theme folder name when new theme is applied so we are replacing it to return our theme folder name or "default" which is the name for store downloded themes
+
+9.
+Original class: DownloadedThemeHeader.java
+Decompiled class: com.touchtype.keyboard.theme.d
+Method:
+private void a(Context context, a aVar) {
+        OutputStream fileOutputStream;
+        Throwable th;
+        InputStream inputStream = null;
+        String absolutePath = n.b(context).getAbsolutePath();
+        try {
+            InputStream a = aVar.a("thumbnail.png");
+            try {
+                fileOutputStream = new FileOutputStream(new File(absolutePath, b() + ".png"));
+            } catch (Throwable th2) {
+                th = th2;
+                fileOutputStream = null;
+                inputStream = a;
+                k.a(inputStream);
+                if (fileOutputStream != null) {
+                    try {
+                        fileOutputStream.close();
+                    } catch (Throwable e) {
+                        aj.d("DownloadedThemeHeader", "error", e);
+                    }
+                }
+                throw th;
+            }
+            try {
+                byte[] bArr = new byte[4096];
+                while (true) {
+                    int read = a.read(bArr);
+                    if (read == -1) {
+                        break;
+                    }
+                    fileOutputStream.write(bArr, 0, read);
+                }
+                k.a(a);
+                if (fileOutputStream != null) {
+                    try {
+                        fileOutputStream.close();
+                    } catch (Throwable th3) {
+                        aj.d("DownloadedThemeHeader", "error", th3);
+                    }
+                }
+            } catch (Throwable th4) {
+                th3 = th4;
+                inputStream = a;
+                k.a(inputStream);
+                if (fileOutputStream != null) {
+                    fileOutputStream.close();
+                }
+                throw th3;
+            }
+        } catch (Throwable th5) {
+            th3 = th5;
+            fileOutputStream = null;
+            k.a(inputStream);
+            if (fileOutputStream != null) {
+                fileOutputStream.close();
+            }
+            throw th3;
+        }
+    }
+This method creates store themes thumbnails in our folder which causes troubles so we block it. Swiftkey then creates thumbnails in its external storage data directory so no problems by blocking this
+
+10.
+Original class: ThemeStorage.java
+Decompiled class: com.touchtype.themes.e.a.a
+Method:
+public static a a(DisplayMetrics displayMetrics) {
+            int i = displayMetrics.densityDpi;
+            if (i <= LDPI.a()) {
+                return LDPI;
+            }
+            if (i <= MDPI.a()) {
+                return MDPI;
+            }
+            if (i <= HDPI.a()) {
+                return HDPI;
+            }
+            return XHDPI;
+        }
+Here we just hook this method to get the theme subfolder for the device screen density and unhook if we got it...
+
+11.
+Original class: DownloadedThemeHeader.java
+Decompiled class: com.touchtype.keyboard.theme.d
+Method:
+ public InputStream d(Context context) {
+        File file = new File(n.b(context), b() + ".png");
+        if (file.exists()) {
+            try {
+                return new FileInputStream(file);
+            } catch (FileNotFoundException e) {
+            }
+        }
+        return null;
+    }
+This method copies our themes thumbnails to our root folder. We already have thumbnails so lets block it and redirect requests to existing thumbnails
+
+12.
+Original class: ThemesListAdapter.java
+Decompiled class: com.touchtype.materialsettings.themessettings.e
+Method:
+public void onClick(View view) {
+        if (this.c.b.c().containsKey(((i) this.c.i.get(this.a)).a())) {
+            try {
+                this.c.a(((i) this.c.i.get(this.a)).a(), false);
+                for (b bVar : this.c.c) {
+                    bVar.p.setSelected(false);
+                    bVar.m.setVisibility(4);
+                }
+                this.c.c.clear();
+                this.b.p.setSelected(true);
+                this.b.m.setVisibility(0);
+                this.c.c.add(this.b);
+                return;
+            } catch (Throwable e) {
+                aj.e("ThemesListAdapter", "error", e);
+                this.c.notifyDataSetChanged();
+                Context applicationContext = this.c.a.getApplicationContext();
+                Toast.makeText(applicationContext, applicationContext.getString(2131231649, new Object[]{this.b.q.getText()}), 0).show();
+                return;
+            }
+        }
+        aj.d("ThemesListAdapter", "Theme is not available, cannot set to this theme");
+    }
+This is the adapter onClick item method for Swiftkey themes settings screen. Here we grab what we need to save applied theme ID in our preferences so we can change the Swiftkey behavior if it is our theme. From fields we grab the adater -> then item clicked from it so we can get the its id. While we are there we grab Swiftkey context as well and use it to start our IntentService which saves applied theme ID to our preferences.
+
+That's it. I hope this will help keeping the module updated if things brakes with Swiftkey updates.

@@ -112,8 +112,8 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                     findAndHookMethod("com.touchtype.keyboard.theme.n", lpparam.classLoader, "a",
                             findClass("com.touchtype.keyboard.theme.d", lpparam.classLoader), Context.class, new XC_MethodHook() {
                                 protected void beforeHookedMethod(final XC_MethodHook.MethodHookParam param) throws Throwable {
-                                    String id = (String) callMethod(param.args[0], "a");
-                                    if (id == null) {
+                                    String sha = (String) callMethod(param.args[0], "a");
+                                    if (sha == null) {
                                         param.setResult(null);
                                     }
                                 }
@@ -130,8 +130,7 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                                 }
                             });
 
-                    //* this fixes swiftkey bug? which sometimes returns thumbnail png file as my theme folder...
-                    //* prabobly unnesesery b/c we block thumbnails copy later, but still...
+                    //* get our theme folder name or "default" which is the name for store downloded themes
                     findAndHookMethod("com.touchtype.keyboard.theme.d", lpparam.classLoader, "f", Context.class, new XC_MethodHook() {
                         @Override
                         protected void afterHookedMethod(final XC_MethodHook.MethodHookParam param) throws Throwable {
