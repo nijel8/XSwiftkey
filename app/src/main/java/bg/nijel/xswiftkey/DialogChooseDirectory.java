@@ -89,14 +89,22 @@ class DialogChooseDirectory implements OnClickListener, OnItemClickListener {
                         this.m_entries.add(file);
                     }
                 }
-                Collections.addAll(this.m_entries, this.m_currentDir.listFiles(themelist));
             }
+            Collections.addAll(this.m_entries, this.m_currentDir.listFiles(themelist));
         } else {
             Toast.makeText(this.m_context, this.m_currentDir.getAbsolutePath() + ": " + this.m_context.getString(R.string.label_unable_access), Toast.LENGTH_SHORT).show();
         }
         Collections.sort(this.m_entries, new Comparator<File>() {
             public int compare(File f1, File f2) {
-                return f1.getName().toLowerCase().compareTo(f2.getName().toLowerCase());
+                if (f1.isDirectory() && f2.isDirectory()) {
+                    return f1.getName().toLowerCase().compareTo(f2.getName().toLowerCase());
+                } else if (f1.isDirectory()) {
+                    return 1;
+                }else if(f2.getName().equals("..")){
+                    return 1;
+                } else {
+                    return -1;
+                }
             }
         });
     }
