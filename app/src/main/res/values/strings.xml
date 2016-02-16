@@ -20,6 +20,7 @@
     <string name="pref_bringup_keyboard_title">Toggle keyboard</string>
     <string name="pref_bringup_keyboard_summary">Show/hide keyboard</string>
     <string name="label_unable_access">Access denied…</string>
+    <string name="pref_category_debug_title">Enable debugging</string>
     <string name="pref_debug_title">Debug</string>
     <string name="pref_debug_summary">Enable logging in logcat. Filter for TAG->"xposed" and Message->"swiftkey" </string>
 </resources>
