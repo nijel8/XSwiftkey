@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.CheckBoxPreference;
@@ -46,7 +47,6 @@ public class XSwiftkeyActivity extends PreferenceActivity implements
         prefs = getSharedPreferences(MY_PACKAGE_NAME + "_preferences", Context.MODE_WORLD_READABLE);
         PreferenceScreen prefScreen = getPreferenceManager().createPreferenceScreen(this);
         setPreferenceScreen(prefScreen);
-        setTitle(getString(R.string.app_name) + " Settings");
         {
             final Preference pr = new Preference(this);
             pr.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -146,10 +146,17 @@ public class XSwiftkeyActivity extends PreferenceActivity implements
         }
         //noinspection ConstantConditions
         if (!isModuleRunning()) {
-            setTitle(Html.fromHtml("<font color=\"#FF4400\">" + getString(R.string.app_name) + " Module NOT ACTIVE</font>"));
+            setTitle(Html.fromHtml("<font color=\"#FF4400\">Module NOT ACTIVE</font>"));
             Toast.makeText(this, "Module not loaded or disabled...", Toast.LENGTH_LONG).show();
+        }else {
+            String namever = "";
+            try {
+                namever = getString(R.string.version, getPackageManager()
+                        .getPackageInfo(getPackageName(), 0).versionName);
+            } catch (PackageManager.NameNotFoundException ignored) {
+            }
+            setTitle(getString(R.string.app_name) + namever);
         }
-
     }
 
 
@@ -178,7 +185,7 @@ public class XSwiftkeyActivity extends PreferenceActivity implements
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         //noinspection ConstantConditions,ConstantConditions
         if (!isModuleRunning()) {
-            setTitle(Html.fromHtml("<font color=\"#FF4400\">" + getString(R.string.app_name) + " Module NOT ACTIVE</font>"));
+            setTitle(Html.fromHtml("<font color=\"#FF4400\">Module NOT ACTIVE</font>"));
             Toast.makeText(XSwiftkeyActivity.this, "Module not loaded or disabled...", Toast.LENGTH_LONG).show();
         }
     }

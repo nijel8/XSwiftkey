@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="version">" - "v.%s</string>
     <string name="app_name">SwiftkeyXthemes</string>
     <string name="xposed_desc">Use custom themes with Swiftkey keyboard</string>
     <string name="pref_category_adjust_keyboard_size_title">Adjust key labels</string>
