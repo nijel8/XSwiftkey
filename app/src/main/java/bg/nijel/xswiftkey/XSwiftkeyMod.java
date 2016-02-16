@@ -63,6 +63,9 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
         if (!myPrefs.getString(XSwiftkeyActivity.MY_THEMES_LIST
                 , "Not set").equals("Not set")) {
             if (lpparam.packageName.contains("com.touchtype.swiftkey")) {
+                if (myPrefs.getBoolean(XSwiftkeyActivity.KEY_DEBUG, false)) {
+                    XposedBridge.log("xswiftkey PACKAGE: >" + lpparam.packageName + "<");
+                }
                 try {
                     selectedThemeId = myPrefs.getString(SaveThemeIdIntentService.CURRENT_THEME, null);
 
