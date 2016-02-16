@@ -1,11 +1,13 @@
 package bg.nijel.xswiftkey;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.CheckBoxPreference;
@@ -32,6 +34,7 @@ public class XSwiftkeyActivity extends PreferenceActivity implements
     public static final String KEY_LETTER_SCALE = "letter_key_bottom_text_scale";
     public static final String KEY_LETTER_HEIGHT = "letter_key_main_text_height";
     public static final String KEY_POPUP_LETTER_SCALE = "letter_preview_popup_text_scale";
+    public static final String KEY_DEBUG = "debug";
     private static SharedPreferences prefs;
 
     @SuppressLint({"WorldReadableFiles", "SetWorldReadable"})
@@ -144,6 +147,16 @@ public class XSwiftkeyActivity extends PreferenceActivity implements
             pr.setSummary(getString(R.string.pref_apply_changes_summary));
             apply.addPreference(pr);
         }
+
+        {
+            // Add Debug
+            final CheckBoxPreference pr = new CheckBoxPreference(this);
+            pr.setKey(KEY_DEBUG);
+            pr.setTitle(R.string.pref_debug_title);
+            pr.setSummary(R.string.pref_debug_summary);
+            prefScreen.addPreference(pr);
+        }
+
         //noinspection ConstantConditions
         if (!isModuleRunning()) {
             setTitle(Html.fromHtml("<font color=\"#FF4400\">Module NOT ACTIVE</font>"));
@@ -157,6 +170,7 @@ public class XSwiftkeyActivity extends PreferenceActivity implements
             }
             setTitle(getString(R.string.app_name) + namever);
         }
+        isStoragePermissionGranted();
     }
 
 
@@ -198,5 +212,31 @@ public class XSwiftkeyActivity extends PreferenceActivity implements
         getPreferenceScreen().findPreference(MY_THEMES_LIST).setSummary(getString(R.string.pref_my_themes_location_summary) + " "
                 + prefs.getString(MY_THEMES_LIST, "Not set"));
     }
+
+    public  boolean isStoragePermissionGranted() {
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (this.checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED) {
+                return true;
+            } else {
+                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+                return false;
+            }
+        }
+        else { //permission is automatically granted on sdk<23 upon installation
+            return true;
+        }
+
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(!(grantResults[0]== PackageManager.PERMISSION_GRANTED)){
+            Toast.makeText(this, "Read /sdcard permission not granted", Toast.LENGTH_SHORT).show();
+        }
+    }
+
 }
 
