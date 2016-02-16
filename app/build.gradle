@@ -3,15 +3,13 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 23
     buildToolsVersion '23.0.2'
-
     defaultConfig {
         applicationId "bg.nijel.xswiftkey"
         minSdkVersion 14
         targetSdkVersion 23
-        versionCode 4
-        versionName "1.03"
+        versionCode 5
+        versionName "1.04"
     }
-
     buildTypes {
         release {
             minifyEnabled false
@@ -19,11 +17,18 @@ android {
             zipAlignEnabled true
         }
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+    productFlavors {
+    }
 }
+
 
 if (project.hasProperty("MySigningConfig.signing")
         && new File(project.property("MySigningConfig.signing") + ".gradle").exists()) {
-    apply from: project.property("MySigningConfig.signing") + ".gradle";
+apply from: project.property("MySigningConfig.signing") + ".gradle";
 }
 
 dependencies {
