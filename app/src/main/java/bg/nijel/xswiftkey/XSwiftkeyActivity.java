@@ -147,14 +147,16 @@ public class XSwiftkeyActivity extends PreferenceActivity implements
             pr.setSummary(getString(R.string.pref_apply_changes_summary));
             apply.addPreference(pr);
         }
-
+        PreferenceCategory debug = new PreferenceCategory(this);
+        debug.setTitle(R.string.pref_category_debug_title);
+        prefScreen.addPreference(debug);
         {
             // Add Debug
             final CheckBoxPreference pr = new CheckBoxPreference(this);
             pr.setKey(KEY_DEBUG);
             pr.setTitle(R.string.pref_debug_title);
             pr.setSummary(R.string.pref_debug_summary);
-            prefScreen.addPreference(pr);
+            debug.addPreference(pr);
         }
 
         //noinspection ConstantConditions
