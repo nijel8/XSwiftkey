@@ -5,6 +5,7 @@ import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 /**
  * Created by Nick on 2/9/2016.
@@ -25,7 +26,12 @@ public class SaveThemeIdIntentService extends IntentService {
         if (intent.getAction().equals(SAVE_CURRENT_THEME)) {
             String MY_PACKAGE_NAME = SaveThemeIdIntentService.class.getPackage().getName();
             SharedPreferences prefs = getSharedPreferences(MY_PACKAGE_NAME + "_preferences", Context.MODE_WORLD_READABLE);
-            prefs.edit().putString(CURRENT_THEME, intent.getStringExtra("saveTheme")).apply();
+            String theme = intent.getStringExtra("saveTheme");
+            prefs.edit().putString(CURRENT_THEME, theme).apply();
+            if (prefs.getBoolean(XSwiftkeyActivity.KEY_DEBUG, false)) {
+                Log.d("Xposed","xswiftkey SAVING THEME: " + theme);
+                Log.d("Xposed","xswiftkey SAVED THEME: " + prefs.getString(CURRENT_THEME, "no theme"));
+            }
         }
     }
 
