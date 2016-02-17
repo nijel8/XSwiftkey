@@ -2,8 +2,11 @@ package bg.nijel.xswiftkey;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.BaseAdapter;
@@ -11,6 +14,7 @@ import android.widget.BaseAdapter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Arrays;
+import java.util.List;
 
 import de.robv.android.xposed.IXposedHookInitPackageResources;
 import de.robv.android.xposed.IXposedHookLoadPackage;
@@ -131,6 +135,7 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
 
                     //* don't add my themes to downloaded themes set
                     findAndHookMethod("com.touchtype.keyboard.theme.n", lpparam.classLoader, "n", Context.class, new XC_MethodHook() {
+
                         XC_MethodHook.Unhook m;
 
                         protected void beforeHookedMethod(final XC_MethodHook.MethodHookParam param) throws Throwable {
@@ -146,7 +151,6 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                                     }
                                 }
                             });
-
                         }
 
                         protected void afterHookedMethod(final XC_MethodHook.MethodHookParam param) throws Throwable {
@@ -270,8 +274,29 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
     @SuppressWarnings("deprecation")
     private void saveCurrentThemeId(Context context, String selectedThemeId) {
         Intent i = new Intent(SaveThemeIdIntentService.SAVE_CURRENT_THEME);
+      //  i.setPackage(MY_PACKAGE_NAME);
         i.putExtra("saveTheme", selectedThemeId);
-        context.startService(i);
+        context.startService(createExplicitFromImplicitIntent(context, i));
+    }
+
+    public static Intent createExplicitFromImplicitIntent(Context context, Intent implicitIntent) {
+        // Retrieve all services that can match the given intent
+        PackageManager pm = context.getPackageManager();
+        List<ResolveInfo> resolveInfo = pm.queryIntentServices(implicitIntent, 0);
+        // Make sure only one match was found
+        if (resolveInfo == null || resolveInfo.size() != 1) {
+            return null;
+        }
+        // Get component info and create ComponentName
+        ResolveInfo serviceInfo = resolveInfo.get(0);
+        String packageName = serviceInfo.serviceInfo.packageName;
+        String className = serviceInfo.serviceInfo.name;
+        ComponentName component = new ComponentName(packageName, className);
+        // Create a new intent. Use the old one for extras and such reuse
+        Intent explicitIntent = new Intent(implicitIntent);
+        // Set the component to be explicit
+        explicitIntent.setComponent(component);
+        return explicitIntent;
     }
 
     private boolean isMyTheme(String theme) {
