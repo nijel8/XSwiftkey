@@ -37,6 +37,7 @@ class DialogChooseDirectory implements OnClickListener, OnItemClickListener {
     private final Button mPositiveBtn;
     private String mResultJson;
     private AlertDialog m_alertDialog;
+    private  boolean hasThemelist;
 
     public class DirAdapter extends ArrayAdapter<File> {
         public DirAdapter(int resid) {
@@ -58,8 +59,12 @@ class DialogChooseDirectory implements OnClickListener, OnItemClickListener {
                 } else {
                     textview.setCompoundDrawablesWithIntrinsicBounds(DialogChooseDirectory.this.m_context.getResources().getDrawable(R.drawable.folder_up), null, null, null);
                 }
-                if (mSavedScroll != null && mSavedScroll[0] > 0) {
-                    m_list.setSelectionFromTop(mSavedScroll[0], mSavedScroll[1]);
+                if (hasThemelist){
+                    m_list.setSelection(0);
+                }else {
+                    if (mSavedScroll != null && mSavedScroll[0] > 0) {
+                        m_list.setSelectionFromTop(mSavedScroll[0], mSavedScroll[1]);
+                    }
                 }
             }
             return textview;
@@ -157,9 +162,13 @@ class DialogChooseDirectory implements OnClickListener, OnItemClickListener {
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
             }
         });
-        if (mSavedScroll != null && mSavedScroll[0] > 0) {
-            this.m_list.setSelectionFromTop(mSavedScroll[0], mSavedScroll[1]);
-        }
+            if (hasThemelist){
+                this.m_list.setSelection(0);
+            }else {
+                if (mSavedScroll != null && mSavedScroll[0] > 0) {
+                this.m_list.setSelectionFromTop(mSavedScroll[0], mSavedScroll[1]);
+                }
+            }
     }
 
     private static Drawable scaleDrawable(Drawable drawable, int width, int height) {
@@ -189,6 +198,7 @@ class DialogChooseDirectory implements OnClickListener, OnItemClickListener {
                 m_alertDialog.setTitle(mBrowsingFolder);
                 listJsonFiles();
                 this.m_list.setAdapter(new DirAdapter(R.layout.listitem_row_textview));
+                hasThemelist = this.m_entries.contains(new File(this.m_currentDir, "themelist.json"));
                 mPositiveBtn.setEnabled(false);
             }
         }
