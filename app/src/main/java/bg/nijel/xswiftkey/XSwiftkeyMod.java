@@ -14,7 +14,7 @@ import android.widget.BaseAdapter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Arrays;
-import java.util.LinkedList;
+import java.util.HashMap;
 import java.util.List;
 
 import de.robv.android.xposed.IXposedHookInitPackageResources;
@@ -40,7 +40,7 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
     private static XSharedPreferences myPrefs;
     private static String scrDensityFolder;
     //* these are just for better logging...
-    List<String> themesList;
+    HashMap<String, Object> themesList;
     private int count;
 
     @Override
@@ -103,7 +103,7 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                     });
 
                     //* don"t add swiftkey downloded themes to preinstalled (my) themes set,
-                    themesList = new LinkedList<>();
+                    themesList = new HashMap<>();
                     count = 1;
                     findAndHookMethod("com.google.common.collect.av.a", lpparam.classLoader, "b", Object.class, Object.class, new XC_MethodHook() {
                         protected void afterHookedMethod(final XC_MethodHook.MethodHookParam param) throws Throwable {
@@ -113,8 +113,13 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                                             || param.args[1].getClass().getName().equals("com.touchtype.keyboard.theme.d")
                                             || param.args[1].getClass().getName().equals("com.touchtype.keyboard.theme.h")) {
                                         String id = (String) param.args[0];
-                                        if(!themesList.contains(id)) {
-                                            themesList.add(id);
+                                        if(!themesList.containsKey(id)) {
+                                                themesList.put(id, param.args[1]);
+                                                XposedBridge.log("xswiftkey IS MY THEME: " + isMyTheme(id));
+                                                XposedBridge.log("xswiftkey THEMES MAPSET: " + count + "-" + Arrays.toString(param.args));
+                                                count++;
+                                        }else if (!themesList.get(id).equals(param.args[1])) {
+                                            themesList.put(id, param.args[1]);
                                             XposedBridge.log("xswiftkey IS MY THEME: " + isMyTheme(id));
                                             XposedBridge.log("xswiftkey THEMES MAPSET: " + count + "-" + Arrays.toString(param.args));
                                             count++;
