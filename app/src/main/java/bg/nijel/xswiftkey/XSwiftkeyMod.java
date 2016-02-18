@@ -1,12 +1,9 @@
 package bg.nijel.xswiftkey;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -14,9 +11,9 @@ import android.widget.BaseAdapter;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FilenameFilter;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 
 import de.robv.android.xposed.IXposedHookInitPackageResources;
 import de.robv.android.xposed.IXposedHookLoadPackage;
@@ -42,13 +39,14 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
     private static String scrDensityFolder;
     //* these are helping for better logging...
     private static HashMap<String, Object> themesSet;
-    private int count;
+    private static int count;
 
     @Override
     public void initZygote(IXposedHookZygoteInit.StartupParam startupParam) throws Throwable {
         MY_PACKAGE_NAME = XSwiftkeyMod.class.getPackage().getName();
         loadPrefs();
         themesSet = new HashMap<>();
+        count = Integer.MAX_VALUE;
     }
 
     @Override
@@ -73,7 +71,7 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                 , "Not set").equals("Not set")) {
             if (lpparam.packageName.contains("com.touchtype.swiftkey")) {
                 if (myPrefs.getBoolean(XSwiftkeyActivity.KEY_DEBUG, false)) {
-                    XposedBridge.log("xswiftkey PACKAGE: " + lpparam.packageName);
+                    XposedBridge.log("xswiftkey HANDLING PACKAGE: " + lpparam.packageName);
                 }
                 try {
                     selectedThemeId = myPrefs.getString(SaveThemeIdIntentService.CURRENT_THEME, null);
@@ -90,6 +88,7 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                         protected void afterHookedMethod(final XC_MethodHook.MethodHookParam param) throws Throwable {
                             if (myPrefs.getBoolean(XSwiftkeyActivity.KEY_DEBUG, false)) {
                                 XposedBridge.log("xswiftkey THEMES FOLDER: >" + param.getResult() + "<");
+                                logSaveToDeleteThemes();
                             }
                         }
                     });
@@ -109,7 +108,6 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
 
                     //* just building themes set for logging
                     if (myPrefs.getBoolean(XSwiftkeyActivity.KEY_DEBUG, false)) {
-                        count = 1;
                         findAndHookMethod("com.google.common.collect.av.a", lpparam.classLoader, "b", Object.class, Object.class, new XC_MethodHook() {
                             protected void afterHookedMethod(final XC_MethodHook.MethodHookParam param) throws Throwable {
                                 if (param.getResult() != null && param.args[0] instanceof String) {
@@ -120,13 +118,11 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                                         if (!themesSet.containsKey(id)) {
                                             themesSet.put(id, param.args[1]);
                                             XposedBridge.log("xswiftkey IS MY THEME: " + isMyTheme(id));
-                                            XposedBridge.log("xswiftkey THEMES MAPSET: " + count + "-" + Arrays.toString(param.args));
-                                            count++;
+                                            XposedBridge.log("xswiftkey THEMES MAPSET: " + themesSet.size() + "-" + Arrays.toString(param.args));
                                         } else if (!themesSet.get(id).equals(param.args[1])) {
                                             themesSet.put(id, param.args[1]);
                                             XposedBridge.log("xswiftkey IS MY THEME: " + isMyTheme(id));
-                                            XposedBridge.log("xswiftkey THEMES MAPSET: " + count + "-" + Arrays.toString(param.args));
-                                            count++;
+                                            XposedBridge.log("xswiftkey THEMES MAPSET: " + themesSet.size() + "-" + Arrays.toString(param.args));
                                         }
                                     }
                                 }
@@ -154,7 +150,7 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                                         if (!dir.exists()) {
                                             param.setResult(null);
                                             if (myPrefs.getBoolean(XSwiftkeyActivity.KEY_DEBUG, false)) {
-                                                Log.e("Xposed", "xswiftkey THEME ID [" + id + "] exists in themelist.json but not found in themes folder");
+                                                Log.e("Xposed", "xswiftkey THEME ID [" + id + "] exists in themelist.json but not found in themes folder!!! Remove its entry from themelist.");
                                             }
                                         }
                                     }
@@ -186,7 +182,7 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                                         if (!dir.exists()) {
                                             param.setResult(null);
                                             if (myPrefs.getBoolean(XSwiftkeyActivity.KEY_DEBUG, false)) {
-                                                Log.e("Xposed", "xswiftkey THEME ID [" + id + "] exists in themelist.json but not found in themes folder");
+                                                Log.e("Xposed", "xswiftkey THEME ID [" + id + "] exists in themelist.json but not found in themes folder!!! Remove its entry from themelist.");
                                             }
                                         }
                                     }
@@ -327,7 +323,7 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                             selectedThemeId = (String) callMethod(storeImageData, "a"); // get selected theme ID
                             Activity activity = (Activity) getObjectField(getObjectField(param.thisObject, "c"), "a");
                             Context swiftContext = activity.getApplicationContext();
-                            saveCurrentThemeId(swiftContext, selectedThemeId);
+                            saveCurrentThemeId(swiftContext);
                             if (myPrefs.getBoolean(XSwiftkeyActivity.KEY_DEBUG, false)) {
                                 XposedBridge.log("xswiftkey ONCLICK THEME: " + selectedThemeId);
                             }
@@ -360,40 +356,70 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
         return list.getParentFile();
     }
 
-    @SuppressLint("WorldReadableFiles")
-    @SuppressWarnings("deprecation")
-    private void saveCurrentThemeId(Context context, String selectedThemeId) {
-        Intent i = new Intent(SaveThemeIdIntentService.SAVE_CURRENT_THEME);
-        i.putExtra("saveTheme", selectedThemeId);
-        context.startService(createExplicitFromImplicitIntent(context, i));
-    }
-
-    //* some users mey experience  Implicit Intent error so lets make it Explicit (we don't have own context)
-    public static Intent createExplicitFromImplicitIntent(Context context, Intent implicitIntent) {
-        // Retrieve all services that can match the given intent
-        PackageManager pm = context.getPackageManager();
-        List<ResolveInfo> resolveInfo = pm.queryIntentServices(implicitIntent, 0);
-        // Make sure only one match was found
-        if (resolveInfo == null || resolveInfo.size() != 1) {
-            return null;
+    private void saveCurrentThemeId(Context context) {
+        Context myContext = null;
+        try {
+            myContext = context.createPackageContext(MY_PACKAGE_NAME, Context.CONTEXT_IGNORE_SECURITY);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
         }
-        // Get component info and create ComponentName
-        ResolveInfo serviceInfo = resolveInfo.get(0);
-        String packageName = serviceInfo.serviceInfo.packageName;
-        String className = serviceInfo.serviceInfo.name;
-        ComponentName component = new ComponentName(packageName, className);
-        // Create a new intent. Use the old one for extras and such reuse
-        Intent explicitIntent = new Intent(implicitIntent);
-        // Set the component to be explicit
-        explicitIntent.setComponent(component);
-        return explicitIntent;
+        if (myPrefs.getBoolean(XSwiftkeyActivity.KEY_DEBUG, false)) {
+            XposedBridge.log("xswiftkey MODULE CONTEXT: " + ((myContext != null) ? myContext.getPackageName() : null));
+        }
+        Intent i = new Intent(myContext, SaveThemeIdIntentService.class);
+        i.setAction(SaveThemeIdIntentService.SAVE_CURRENT_THEME);
+        i.putExtra("saveTheme", selectedThemeId);
+        context.startService(i);
     }
+    /*
+        private void saveCurrentThemeId(Context context, String selectedThemeId) {
+            Intent i = new Intent(SaveThemeIdIntentService.SAVE_CURRENT_THEME);
+            i.putExtra("saveTheme", selectedThemeId);
+            context.startService(createExplicitFromImplicitIntent(context, i));
+        }
 
+        //* some users mey experience  Implicit Intent error so lets make it Explicit (we don't have own context)
+        public static Intent createExplicitFromImplicitIntent(Context context, Intent implicitIntent) {
+            // Retrieve all services that can match the given intent
+            PackageManager pm = context.getPackageManager();
+            List<ResolveInfo> resolveInfo = pm.queryIntentServices(implicitIntent, 0);
+            // Make sure only one match was found
+            if (resolveInfo == null || resolveInfo.size() != 1) {
+                return null;
+            }
+            // Get component info and create ComponentName
+            ResolveInfo serviceInfo = resolveInfo.get(0);
+            String packageName = serviceInfo.serviceInfo.packageName;
+            String className = serviceInfo.serviceInfo.name;
+            ComponentName component = new ComponentName(packageName, className);
+            // Create a new intent. Use the old one for extras and such reuse
+            Intent explicitIntent = new Intent(implicitIntent);
+            // Set the component to be explicit
+            explicitIntent.setComponent(component);
+            return explicitIntent;
+        }
+    */
     private boolean isMyTheme(String theme) {
         if (theme == null) {
             return false;
         }
         File file = new File(getMyThemesFolder(), theme);
-        return file.exists() && file.isDirectory() && !theme.endsWith("_resources") && !theme.equals("default");
+        return file.exists() && file.isDirectory() && !theme.contains("_resources") && !theme.equals("default");
+    }
+
+    private void logSaveToDeleteThemes(){
+        FilenameFilter themes = new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String filename) {
+                return isMyTheme(filename);
+            }
+        };
+        for (String theme : getMyThemesFolder().list(themes)) {
+            if (themesSet != null && themesSet.size() > 0 && themesSet.size() != count && !themesSet.containsKey(theme)) {
+                Log.w("Xposed", "xswiftkey THEME ID [" + theme + "] exists in your themes folder but missing in themelist.json!!! Delete it or add it to themelist if you intent to use it.");
+            }
+        }
+        assert themesSet != null;
+        count = themesSet.size();
     }
 }
