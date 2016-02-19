@@ -1,9 +1,5 @@
 package bg.nijel.xswiftkey;
 
-/**
- * Created by Nick on 1/2/2016.
- */
-
 import android.content.Context;
 import android.preference.EditTextPreference;
 import android.text.TextUtils;

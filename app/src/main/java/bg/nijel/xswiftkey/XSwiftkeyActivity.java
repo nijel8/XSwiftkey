@@ -23,9 +23,6 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 
-/**
- * Created by Nick on 2/7/2016.
- */
 public class XSwiftkeyActivity extends PreferenceActivity implements
         SharedPreferences.OnSharedPreferenceChangeListener, DialogChooseDirectory.Result {
 
