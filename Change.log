@@ -1,6 +1,6 @@
 Change log:
 
-v.1.08: New optin to overrride Swiftkey theme preferences title with your themes lication, app icon refresh.
+v. 1.08: Removed save theme service required permission for better compatibility. New option to override Swiftkey theme preferences title with your themes location, app icon refresh.
 
 v.1.07: Fixed bug: unable to browse folders if already selected theme folder path was changed(folder renamed, old path not exists). Added some user useful logging in logcat: now if you enable debug, restart android and read logcat, module will detect if there is inconsistencies in your themes and themelist - existing theme folders but missing in themelist(warning message in blue) and themes listed in themelist but missing in your theme folder(error message in red)... if any. These inconsistencies will not cause any problems(module takes care of that) but is good to keep themes folder clean...
 
