@@ -1,5 +1,6 @@
 package bg.nijel.xswiftkey;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -374,7 +375,8 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
         Intent i = new Intent(myContext, SaveThemeIdIntentService.class);
         i.setAction(SaveThemeIdIntentService.SAVE_CURRENT_THEME);
         i.putExtra("saveTheme", selectedThemeId);
-        context.startService(i);
+        assert myContext != null;
+        myContext.startService(i);
     }
     /*
         private void saveCurrentThemeId(Context context, String selectedThemeId) {
@@ -428,6 +430,7 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
         count = themesSet.size();
     }
 
+    @SuppressLint("SdCardPath")
     private String getPrefsTitle(){
         return getMyThemesFolder().getPath().replace(Environment.getExternalStorageDirectory().getPath(), "/sdcard");
     }
