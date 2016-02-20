@@ -239,8 +239,6 @@ public class XSwiftkeyActivity extends PreferenceActivity implements
         else { //permission is automatically granted on sdk<23 upon installation
             return true;
         }
-
-
     }
 
     @Override
