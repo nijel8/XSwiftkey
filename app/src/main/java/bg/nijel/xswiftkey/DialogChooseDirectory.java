@@ -97,7 +97,7 @@ class DialogChooseDirectory implements OnClickListener, OnItemClickListener {
             }
             Collections.addAll(this.m_entries, this.m_currentDir.listFiles(themelist));
         } else {
-            Toast.makeText(this.m_context, this.m_currentDir.getAbsolutePath() + ": " + this.m_context.getString(R.string.label_unable_access), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this.m_context, this.m_currentDir.getAbsolutePath() + ": " + this.m_context.getString(R.string.toast_unable_access), Toast.LENGTH_SHORT).show();
         }
         Collections.sort(this.m_entries, new Comparator<File>() {
             public int compare(File f1, File f2) {
@@ -119,8 +119,9 @@ class DialogChooseDirectory implements OnClickListener, OnItemClickListener {
         this.m_context = context;
         this.mResult = res;
         mBrowsingFolder = startDir;
-        if (startDir != null) {
-            this.m_currentDir = new File(startDir).getParentFile();
+        File themelist = new File(startDir);
+        if (themelist.exists()) {
+            this.m_currentDir = themelist.getParentFile();
         } else {
             this.m_currentDir = Environment.getExternalStorageDirectory();
         }
