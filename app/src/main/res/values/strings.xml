@@ -20,8 +20,10 @@
     <string name="pref_bringup_keyboard_title">Toggle keyboard</string>
     <string name="pref_bringup_keyboard_summary">Show/hide keyboard</string>
     <string name="toast_unable_access">Access denied…</string>
-    <string name="toast_not_exist">does not exist…</string>
     <string name="pref_category_debug_title">Enable debugging</string>
     <string name="pref_debug_title">Debug</string>
     <string name="pref_debug_summary">Enable logging in logcat. Filter for TAG->"xposed" and Message->"swiftkey" </string>
+    <string name="pref_category_location_title">Themes location</string>
+    <string name="pref_custom_swiftkey_title">Custom swiftkey title</string>
+    <string name="pref_custom_swiftkey_summary">Override swiftkey themes preferences title with themes location</string>
 </resources>

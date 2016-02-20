@@ -27,6 +27,7 @@ public class XSwiftkeyActivity extends PreferenceActivity implements
         SharedPreferences.OnSharedPreferenceChangeListener, DialogChooseDirectory.Result {
 
     public static final String MY_THEMES_LIST = "my_themes_list";
+    public static final String OVERRIDE_SWIFTKEY_TITLE = "override_swiftkey_title";
     public static final String RESIZE_KEYBOARD = "resize_keyboard";
     public static final String KEY_LETTER_SCALE = "letter_key_bottom_text_scale";
     public static final String KEY_LETTER_HEIGHT = "letter_key_main_text_height";
@@ -47,6 +48,9 @@ public class XSwiftkeyActivity extends PreferenceActivity implements
         prefs = getSharedPreferences(MY_PACKAGE_NAME + "_preferences", Context.MODE_WORLD_READABLE);
         PreferenceScreen prefScreen = getPreferenceManager().createPreferenceScreen(this);
         setPreferenceScreen(prefScreen);
+        PreferenceCategory location = new PreferenceCategory(this);
+        location.setTitle(R.string.pref_category_location_title);
+        prefScreen.addPreference(location);
         {
             final Preference pr = new Preference(this);
             pr.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -61,7 +65,14 @@ public class XSwiftkeyActivity extends PreferenceActivity implements
             pr.setTitle(R.string.pref_my_themes_location_title);
             pr.setSummary(getString(R.string.pref_my_themes_location_summary) + " " + prefs.getString(XSwiftkeyActivity.MY_THEMES_LIST
                     , "Not set"));
-            prefScreen.addPreference(pr);
+            location.addPreference(pr);
+        }
+        {
+            final CheckBoxPreference pr = new CheckBoxPreference(this);
+            pr.setKey(OVERRIDE_SWIFTKEY_TITLE);
+            pr.setTitle(R.string.pref_custom_swiftkey_title);
+            pr.setSummary(R.string.pref_custom_swiftkey_summary);
+            location.addPreference(pr);
         }
         PreferenceCategory category = new PreferenceCategory(this);
         category.setTitle(R.string.pref_category_adjust_keyboard_size_title);
@@ -103,6 +114,9 @@ public class XSwiftkeyActivity extends PreferenceActivity implements
             pr.getEditText().setHint("0.7");
             pr.getEditText().setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
             category.addPreference(pr);
+        }
+        if(prefs.getString(XSwiftkeyActivity.MY_THEMES_LIST, "Not set").equals("Not set")) {
+            getPreferenceScreen().findPreference(OVERRIDE_SWIFTKEY_TITLE).setEnabled(false);
         }
         getPreferenceScreen().findPreference(KEY_LETTER_SCALE).setDependency(RESIZE_KEYBOARD);
         getPreferenceScreen().findPreference(KEY_LETTER_HEIGHT).setDependency(RESIZE_KEYBOARD);

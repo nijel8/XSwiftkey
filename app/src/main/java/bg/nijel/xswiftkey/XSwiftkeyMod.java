@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Environment;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -58,6 +59,10 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                     resparam.res.setReplacement(resparam.packageName, "string", "letter_key_bottom_text_scale", myPrefs.getString(XSwiftkeyActivity.KEY_LETTER_SCALE, "0.8"));//1
                     resparam.res.setReplacement(resparam.packageName, "string", "letter_key_main_text_height", myPrefs.getString(XSwiftkeyActivity.KEY_LETTER_HEIGHT, "0.5"));//0.6
                     resparam.res.setReplacement(resparam.packageName, "string", "letter_preview_popup_text_scale", myPrefs.getString(XSwiftkeyActivity.KEY_POPUP_LETTER_SCALE, "0.7"));//0.8
+                }
+                if (myPrefs.getBoolean(XSwiftkeyActivity.OVERRIDE_SWIFTKEY_TITLE, false) &&
+                        !myPrefs.getString(XSwiftkeyActivity.MY_THEMES_LIST, "Not set").equals("Not set")) {
+                    resparam.res.setReplacement(resparam.packageName, "string", "themes_current_title", "Themes in " + getPrefsTitle());
                 }
             } catch (Throwable t) {
                 XposedBridge.log(t);
@@ -421,5 +426,9 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
         }
         assert themesSet != null;
         count = themesSet.size();
+    }
+
+    private String getPrefsTitle(){
+        return getMyThemesFolder().getPath().replace(Environment.getExternalStorageDirectory().getPath(), "/sdcard");
     }
 }
