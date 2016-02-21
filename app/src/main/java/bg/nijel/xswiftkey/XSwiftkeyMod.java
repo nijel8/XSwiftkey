@@ -65,8 +65,9 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                         !myPrefs.getString(XSwiftkeyActivity.MY_THEMES_LIST, "Not set").equals("Not set")) {
                     resparam.res.setReplacement(resparam.packageName, "string", "themes_current_title", "Themes in " + getPrefsTitle());
                 }
-            } catch (Throwable t) {
-                XposedBridge.log(t);
+            } catch (Exception e) {
+                XposedBridge.log("==================================================================\nxswiftkey Error Message: " + e.getMessage());
+                XposedBridge.log("xswiftkey Error Cause: " + e.getCause().toString() + "\n==================================================================");
             }
         }
     }
@@ -246,7 +247,7 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                                 protected void beforeHookedMethod(final XC_MethodHook.MethodHookParam param) throws Throwable {
                                     sha = (String) callMethod(param.args[0], "a");
                                     if (myPrefs.getBoolean(XSwiftkeyActivity.KEY_DEBUG, false)) {
-                                        XposedBridge.log("xswiftkey THEME SHA null?: " + (sha == null));
+                                        XposedBridge.log("xswiftkey THEME SHA-1 null? " + (sha == null));
                                     }
                                     if (sha == null) {
                                         param.setResult(null);
@@ -255,7 +256,7 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
 
                                 protected void afterHookedMethod(final XC_MethodHook.MethodHookParam param) throws Throwable {
                                     if (myPrefs.getBoolean(XSwiftkeyActivity.KEY_DEBUG, false) && param.getResult() == null) {
-                                        XposedBridge.log("xswiftkey MY THEME-> No unzip and sumcheck");
+                                        XposedBridge.log("xswiftkey MY THEME -> No unzip and sumcheck...");
                                     }
                                 }
                             });
@@ -335,8 +336,9 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                             }
                         }
                     });
-                } catch (Throwable t) {
-                    XposedBridge.log(t);
+                } catch (Exception e) {
+                    XposedBridge.log("==================================================================\nxswiftkey Error Message: " + e.getMessage());
+                    XposedBridge.log("xswiftkey Error Cause: " + e.getCause().toString() + "\n==================================================================");
                 }
             }
         }
