@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="bg.nijel.xswiftkey">
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <application
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
@@ -25,6 +26,7 @@
             tools:ignore="ExportedService">
             <intent-filter>
                 <action android:name="bg.nijel.xswiftkey.SAVE_CURRENT_THEME" />
+                <action android:name="bg.nijel.xswiftkey.SAVE_LOGCAT" />
             </intent-filter>
         </service>
         <meta-data android:name="xposedmodule" android:value="true" />
