@@ -1,6 +1,6 @@
 Change log:
 
-v. 1.09: Added check at module startup for criical hooks - if for example after Swifkey update module can not hook esential methods, it should exit and let Swifkey work with stock themes... Otherwise Swiftkey might delete all our custom themes. 
+v. 1.09: Added check at module startup for criical hooks - if for example after Swifkey update module can not hook essential methods, it should exit and let Swifkey work with stock themes... Otherwise Swiftkey might delete all our custom themes. 
 Added new preference to enable exporting filtered logcat to "/sdcard/Xswiftkey.logcat" at boot time. Provide it to get better support.
 
 v. 1.08: Removed save theme service required permission for better compatibility. New option to override Swiftkey theme preferences title with your themes location, app icon refresh.
