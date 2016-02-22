@@ -26,4 +26,6 @@
     <string name="pref_category_location_title">Themes location</string>
     <string name="pref_custom_swiftkey_title">Custom swiftkey title</string>
     <string name="pref_custom_swiftkey_summary">Override swiftkey themes preferences title with themes location</string>
+    <string name="pref_dump_logcat_title">Export logcat</string>
+    <string name="pref_dump_logcat_summary">Save filtered logcat to /sdcard/Xswiftkey.logcat</string>
 </resources>
