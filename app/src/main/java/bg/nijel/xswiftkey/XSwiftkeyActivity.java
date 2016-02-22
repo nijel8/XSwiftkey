@@ -33,6 +33,7 @@ public class XSwiftkeyActivity extends PreferenceActivity implements
     public static final String KEY_LETTER_HEIGHT = "letter_key_main_text_height";
     public static final String KEY_POPUP_LETTER_SCALE = "letter_preview_popup_text_scale";
     public static final String KEY_DEBUG = "debug";
+    public static final String KEY_DUMP_LOGCAT = "dump_logcat";
     private static SharedPreferences prefs;
 
     @SuppressLint({"WorldReadableFiles", "SetWorldReadable"})
@@ -169,6 +170,15 @@ public class XSwiftkeyActivity extends PreferenceActivity implements
             pr.setSummary(R.string.pref_debug_summary);
             debug.addPreference(pr);
         }
+        {
+            // Add Dump logcat to /sdcard
+            final CheckBoxPreference pr = new CheckBoxPreference(this);
+            pr.setTitle(R.string.pref_dump_logcat_title);
+            pr.setSummary(getString(R.string.pref_dump_logcat_summary));
+            pr.setKey(KEY_DUMP_LOGCAT);
+            debug.addPreference(pr);
+        }
+        getPreferenceScreen().findPreference(KEY_DUMP_LOGCAT).setDependency(KEY_DEBUG);
 
         //noinspection ConstantConditions
         if (!isModuleRunning()) {
@@ -208,12 +218,20 @@ public class XSwiftkeyActivity extends PreferenceActivity implements
                 .unregisterOnSharedPreferenceChangeListener(this);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         //noinspection ConstantConditions,ConstantConditions
         if (!isModuleRunning()) {
             setTitle(Html.fromHtml("<font color=\"#FF4400\">Module NOT ACTIVE</font>"));
             Toast.makeText(XSwiftkeyActivity.this, "Module not loaded or disabled...", Toast.LENGTH_LONG).show();
+        }
+        if(key.equals(KEY_DEBUG)){
+            CheckBoxPreference debug = (CheckBoxPreference) getPreferenceScreen().findPreference(key);
+            if(!debug.isChecked()){
+                CheckBoxPreference dump = (CheckBoxPreference) getPreferenceScreen().findPreference(KEY_DUMP_LOGCAT);
+                dump.setChecked(false);
+            }
         }
     }
 
@@ -228,12 +246,13 @@ public class XSwiftkeyActivity extends PreferenceActivity implements
 
     public  boolean isStoragePermissionGranted() {
         if (Build.VERSION.SDK_INT >= 23) {
-            if (this.checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE)
-                    == PackageManager.PERMISSION_GRANTED) {
-                return true;
-            } else {
-                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+            boolean read = this.checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+            boolean write = this.checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+            if(!read || !write) {
+                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
                 return false;
+            }else {
+                return true;
             }
         }
         else { //permission is automatically granted on sdk<23 upon installation
@@ -244,10 +263,11 @@ public class XSwiftkeyActivity extends PreferenceActivity implements
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if(!(grantResults[0]== PackageManager.PERMISSION_GRANTED)){
-            Toast.makeText(this, "Read /sdcard permission not granted", Toast.LENGTH_SHORT).show();
+        for (String p : permissions) {
+            if (!(grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                Toast.makeText(this, p.substring(p.lastIndexOf(".")) + " permission not granted!!!", Toast.LENGTH_SHORT).show();
+            }
         }
     }
-
 }
 
