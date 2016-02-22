@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Environment;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -24,6 +23,7 @@ import de.robv.android.xposed.IXposedHookZygoteInit;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XSharedPreferences;
+import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.callbacks.XC_InitPackageResources;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
@@ -69,9 +69,8 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                         !myPrefs.getString(XSwiftkeyActivity.MY_THEMES_LIST, "Not set").equals("Not set")) {
                     resparam.res.setReplacement(resparam.packageName, "string", "themes_current_title", "Themes in " + getPrefsTitle());
                 }
-            } catch (Exception e) {
-                Log.e("Xposed", "==================================================================\nxswiftkey Error Message: " + e.getMessage());
-                Log.e("Xposed", "xswiftkey Error Cause: " + e.getCause().toString() + "\n==================================================================");
+            } catch (Throwable t) {
+                XposedBridge.log(t);
             }
         }
     }
@@ -85,25 +84,24 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                     Log.d("Xposed", "xswiftkey HANDLING PACKAGE: " + lpparam.packageName);
                 }
                 try {
-
                     //* module wont work if we can't find this class(after Swiftkey update for example) so -> exiting
-                    Class<?> themesManager = findClass("com.touchtype.keyboard.theme.n", lpparam.classLoader);
-                    if (themesManager == null) {
-                        Log.e("Xposed", "xswiftkey CRITICAL THEMES MANAGER CLASS NOT FOUND!!!");
-                        return;
-                    }
-
+                    Class<?> themesManager;
                     //* before do the job we first will try to find all methods responsible
                     //* for deleting our themes if load theme fails. If we can't find them
                     //* we will not continue. Otherwise Swiftkey might delete all our themes if theme loading fails.
                     //* This might happen after Swiftkey update if methods names/locations are changed....
                     //* Module still might work but we don't want to delete users themes...
-                    Method methodBlockDeleteThemesR = findMethodExact(themesManager, "r", Context.class);
-                    Method methodBlockDeleteThemesI = findMethodExact(themesManager, "i", Context.class);
-                    Method methodBlockEmptyThemelist = findMethodExact(themesManager, "a", Context.class,
-                            findClass("com.touchtype.keyboard.theme.k", lpparam.classLoader));
-                    if (methodBlockDeleteThemesR == null || methodBlockDeleteThemesI == null || methodBlockEmptyThemelist == null) {
-                        Log.e("Xposed", "xswiftkey ESSENTIAL THEMES INTEGRITY METHOD NOT FOUND!!!");
+                    Method methodBlockDeleteThemesR;
+                    Method methodBlockDeleteThemesI;
+                    Method methodBlockEmptyThemelist;
+                    try {
+                        themesManager = findClass("com.touchtype.keyboard.theme.n", lpparam.classLoader);
+                        methodBlockDeleteThemesR = findMethodExact(themesManager, "r", Context.class);
+                        methodBlockDeleteThemesI = findMethodExact(themesManager, "i", Context.class);
+                        methodBlockEmptyThemelist = findMethodExact(themesManager, "a", Context.class,
+                                findClass("com.touchtype.keyboard.theme.k", lpparam.classLoader));
+                    }catch(Throwable t) {
+                            XposedBridge.log(t);
                         return;
                     }
 
@@ -363,9 +361,8 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                             }
                         }
                     });
-                } catch (Exception e) {
-                    Log.e("Xposed", "==================================================================\nxswiftkey Error Message: " + e.getMessage());
-                    Log.e("Xposed", "xswiftkey Error Cause: " + e.getCause().toString() + "\n==================================================================");
+                } catch (Throwable t) {
+                    XposedBridge.log(t);
                 }
             }
         }
@@ -395,8 +392,8 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
         Context myContext = null;
         try {
             myContext = context.createPackageContext(MY_PACKAGE_NAME, Context.CONTEXT_IGNORE_SECURITY);
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
+        } catch (Throwable t) {
+            XposedBridge.log(t);
         }
         if (myPrefs.getBoolean(XSwiftkeyActivity.KEY_DEBUG, false)) {
             Log.d("Xposed", "xswiftkey MODULE CONTEXT: " + ((myContext != null) ? myContext.getPackageName() : null));
@@ -453,7 +450,7 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
 
     @SuppressLint("SdCardPath")
     private String getPrefsTitle() {
-        return getMyThemesFolder().getPath().replace(Environment.getExternalStorageDirectory().getPath(), "/sdcard");
+        return getMyThemesFolder().getAbsolutePath().replace(Environment.getExternalStorageDirectory().getAbsolutePath(), "/sdcard");
     }
 
     private void logSaveToDeleteThemes() {
