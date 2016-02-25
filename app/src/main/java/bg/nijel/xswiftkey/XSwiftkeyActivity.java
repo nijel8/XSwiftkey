@@ -26,6 +26,7 @@ import java.io.IOException;
 public class XSwiftkeyActivity extends PreferenceActivity implements
         SharedPreferences.OnSharedPreferenceChangeListener, DialogChooseDirectory.Result {
 
+    public static final String HANDLE_BETA = "handle_beta";
     public static final String MY_THEMES_LIST = "my_themes_list";
     public static final String OVERRIDE_SWIFTKEY_TITLE = "override_swiftkey_title";
     public static final String RESIZE_KEYBOARD = "resize_keyboard";
@@ -49,6 +50,13 @@ public class XSwiftkeyActivity extends PreferenceActivity implements
         prefs = getSharedPreferences(MY_PACKAGE_NAME + "_preferences", Context.MODE_WORLD_READABLE);
         PreferenceScreen prefScreen = getPreferenceManager().createPreferenceScreen(this);
         setPreferenceScreen(prefScreen);
+        {
+            final CheckBoxPreference pr = new CheckBoxPreference(this);
+            pr.setKey(HANDLE_BETA);
+            pr.setTitle(R.string.pref_handle_beta_title);
+            pr.setSummary(R.string.pref_handle_beta_summary);
+            prefScreen.addPreference(pr);
+        }
         PreferenceCategory location = new PreferenceCategory(this);
         location.setTitle(R.string.pref_category_location_title);
         prefScreen.addPreference(location);

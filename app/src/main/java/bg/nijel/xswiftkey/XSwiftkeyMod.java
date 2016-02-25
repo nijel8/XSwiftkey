@@ -79,7 +79,7 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
     public void handleLoadPackage(final XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
         if (!myPrefs.getString(XSwiftkeyActivity.MY_THEMES_LIST
                 , "Not set").equals("Not set")) {
-            if (lpparam.packageName.contains("com.touchtype.swiftkey")) {
+            if (lpparam.packageName.equals(whichSwiftkey())) {
                 if (myPrefs.getBoolean(XSwiftkeyActivity.KEY_DEBUG, false)) {
                     Log.d("Xposed", "xswiftkey HANDLING PACKAGE: " + lpparam.packageName);
                 }
@@ -95,11 +95,11 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                     Method methodBlockDeleteThemesI;
                     Method methodBlockEmptyThemelist;
                     try {
-                        themesManager = findClass("com.touchtype.keyboard.theme.n", lpparam.classLoader);
+                        themesManager = findClass(getClassFor("com.touchtype.keyboard.theme.n"), lpparam.classLoader);
                         methodBlockDeleteThemesR = findMethodExact(themesManager, "r", Context.class);
                         methodBlockDeleteThemesI = findMethodExact(themesManager, "i", Context.class);
                         methodBlockEmptyThemelist = findMethodExact(themesManager, "a", Context.class,
-                                findClass("com.touchtype.keyboard.theme.k", lpparam.classLoader));
+                                findClass(getClassFor("com.touchtype.keyboard.theme.k"), lpparam.classLoader));
                     }catch(Throwable t) {
                             XposedBridge.log(t);
                         return;
@@ -146,9 +146,9 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                         findAndHookMethod("com.google.common.collect.av.a", lpparam.classLoader, "b", Object.class, Object.class, new XC_MethodHook() {
                             protected void afterHookedMethod(final XC_MethodHook.MethodHookParam param) throws Throwable {
                                 if (param.getResult() != null && param.args[0] instanceof String) {
-                                    if (param.args[1].getClass().getName().equals("com.touchtype.keyboard.theme.a")
-                                            || param.args[1].getClass().getName().equals("com.touchtype.keyboard.theme.d")
-                                            || param.args[1].getClass().getName().equals("com.touchtype.keyboard.theme.h")) {
+                                    if (param.args[1].getClass().getName().equals(getClassFor("com.touchtype.keyboard.theme.a"))
+                                            || param.args[1].getClass().getName().equals(getClassFor("com.touchtype.keyboard.theme.d"))
+                                            || param.args[1].getClass().getName().equals(getClassFor("com.touchtype.keyboard.theme.h"))) {
                                         String id = (String) param.args[0];
                                         if (!themesSet.containsKey(id)) {
                                             themesSet.put(id, param.args[1]);
@@ -178,7 +178,7 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                                     if (param.args[0] instanceof String) {
                                         String id = (String) param.args[0];
                                         // File dir = new File(getMyThemesFolder(), id);
-                                        if (isMyTheme(id) && param.args[1].getClass().getName().equals("com.touchtype.keyboard.theme.d")) {
+                                        if (isMyTheme(id) && param.args[1].getClass().getName().equals(getClassFor("com.touchtype.keyboard.theme.d"))) {
                                             param.setResult(null);
                                         }
                                         File dir = new File(getMyThemesFolder(), id);
@@ -210,7 +210,7 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                                 protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                                     if (param.args[0] instanceof String) {
                                         String id = (String) param.args[0];
-                                        if (!isMyTheme(id) && param.args[1].getClass().getName().equals("com.touchtype.keyboard.theme.h")) {
+                                        if (!isMyTheme(id) && param.args[1].getClass().getName().equals(getClassFor("com.touchtype.keyboard.theme.h"))) {
                                             param.setResult(null);
                                         }
                                         File dir = new File(getMyThemesFolder(), id);
@@ -242,7 +242,7 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                                 protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                                     if (param.args[0] instanceof String) {
                                         String id = (String) param.args[0];
-                                        if ((isMyTheme(id) || id.contains("default")) && param.args[1].getClass().getName().equals("com.touchtype.keyboard.theme.a")) {
+                                        if ((isMyTheme(id) || id.contains("default")) && param.args[1].getClass().getName().equals(getClassFor("com.touchtype.keyboard.theme.a"))) {
                                             param.setResult(null);
                                         }
                                     }
@@ -269,7 +269,7 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
 
                     //* blocking attempts to unzip and checksum verify of my themes, our themes don't have SHA-1 JSON element in themelist
                     findAndHookMethod(themesManager, "a",
-                            findClass("com.touchtype.keyboard.theme.d", lpparam.classLoader), Context.class, new XC_MethodHook() {
+                            findClass(getClassFor("com.touchtype.keyboard.theme.d"), lpparam.classLoader), Context.class, new XC_MethodHook() {
                                 String sha = null;
 
                                 protected void beforeHookedMethod(final XC_MethodHook.MethodHookParam param) throws Throwable {
@@ -300,7 +300,7 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                     });
 
                     //* get our theme folder name or "default" which is the name for store downloded themes
-                    findAndHookMethod("com.touchtype.keyboard.theme.d", lpparam.classLoader, "f", Context.class, new XC_MethodHook() {
+                    findAndHookMethod(getClassFor("com.touchtype.keyboard.theme.d"), lpparam.classLoader, "f", Context.class, new XC_MethodHook() {
                         @Override
                         protected void afterHookedMethod(final XC_MethodHook.MethodHookParam param) throws Throwable {
                             if (isMyTheme(selectedThemeId)) {
@@ -316,7 +316,7 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                     });
 
                     //* dealing with themes thumbnails... don't copy swiftkey themes thumbnails...
-                    findAndHookMethod("com.touchtype.keyboard.theme.d", lpparam.classLoader, "a", Context.class,
+                    findAndHookMethod(getClassFor("com.touchtype.keyboard.theme.d"), lpparam.classLoader, "a", Context.class,
                             findClass("com.touchtype.themes.e.a", lpparam.classLoader), XC_MethodReplacement.DO_NOTHING);
 
                     //* ... get display density...
@@ -330,7 +330,7 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                     });
 
                     //* ... and use my existing thumbnails (don't copy them, we alredy have thumbnails)
-                    findAndHookMethod("com.touchtype.keyboard.theme.d", lpparam.classLoader, "d", Context.class, new XC_MethodReplacement() {
+                    findAndHookMethod(getClassFor("com.touchtype.keyboard.theme.d"), lpparam.classLoader, "d", Context.class, new XC_MethodReplacement() {
                         @Override
                         protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
                             String id = (String) callMethod(param.thisObject, "b");
@@ -467,5 +467,16 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
         }
         assert themesSet != null;
         count = themesSet.size();
+    }
+
+    private String whichSwiftkey(){
+        return (myPrefs.getBoolean(XSwiftkeyActivity.HANDLE_BETA, false)) ? "com.touchtype.swiftkey.beta" : "com.touchtype.swiftkey";
+    }
+
+    private String getClassFor(String clazz){
+        if (myPrefs.getBoolean(XSwiftkeyActivity.HANDLE_BETA, false)){
+            clazz = clazz.replace(".theme.", ".h.");
+        }
+        return clazz;
     }
 }

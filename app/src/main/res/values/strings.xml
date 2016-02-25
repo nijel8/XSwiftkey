@@ -4,6 +4,8 @@
     <string name="app_name">SwiftkeyXthemes</string>
     <string name="xposed_desc">Use custom themes with Swiftkey keyboard</string>
     <string name="pref_category_adjust_keyboard_size_title">Adjust key labels</string>
+    <string name="pref_handle_beta_title">Swifkey Beta</string>
+    <string name="pref_handle_beta_summary">Check if using Swifkey Beta</string>
     <string name="pref_my_themes_location_title">Select your \"themelist.json\" file</string>
     <string name="pref_my_themes_location_summary">Set to:</string>
     <string name="pref_adjust_size_title">Resize key labels</string>
