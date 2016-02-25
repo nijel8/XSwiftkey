@@ -11,11 +11,11 @@
     <string name="pref_adjust_size_title">Resize key labels</string>
     <string name="pref_adjust_size_summary">Change key label text size</string>
     <string name="pref_letter_key_bottom_text_scale_title">Key label scale factor</string>
-    <string name="pref_letter_key_bottom_text_scale_summary">Current value: %s (swiftkey defalt: 0.8)</string>
+    <string name="pref_letter_key_bottom_text_scale_summary">Current value: %s (swiftkey default: 0.8)</string>
     <string name="pref_letter_key_main_text_height_title">Key label height</string>
-    <string name="pref_letter_key_main_text_height_summary">Current value: %s (swiftkey defalt: 0.5)</string>
+    <string name="pref_letter_key_main_text_height_summary">Current value: %s (swiftkey default: 0.5)</string>
     <string name="pref_letter_preview_popup_text_scale_title">Popup key label scale factor</string>
-    <string name="pref_letter_preview_popup_text_scale_summary">Current value: %s (swiftkey defalt: 0.7)</string>
+    <string name="pref_letter_preview_popup_text_scale_summary">Current value: %s (swiftkey default: 0.7)</string>
     <string name="pref_category_apply_title">Apply changes</string>
     <string name="pref_apply_changes_title">Restart phone</string>
     <string name="pref_apply_changes_summary">Soft reboot android to apply changes</string>
