@@ -20,7 +20,7 @@
             </intent-filter>
         </activity>
         <service
-            android:name=".SaveThemeIdIntentService"
+            android:name=".service.SaveThemeIdIntentService"
             android:enabled="true"
             android:exported="true"
             tools:ignore="ExportedService">

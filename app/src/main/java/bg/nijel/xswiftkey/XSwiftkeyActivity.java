@@ -23,16 +23,17 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 
+import bg.nijel.xswiftkey.helpers.DialogChooseThemelist;
+import bg.nijel.xswiftkey.helpers.FriendlyEditTextPreference;
+import bg.nijel.xswiftkey.helpers.Swiftkey;
+
 public class XSwiftkeyActivity extends PreferenceActivity implements
-        SharedPreferences.OnSharedPreferenceChangeListener, DialogChooseDirectory.Result {
+        SharedPreferences.OnSharedPreferenceChangeListener, DialogChooseThemelist.Result {
 
     public static final String HANDLE_BETA = "handle_beta";
     public static final String MY_THEMES_LIST = "my_themes_list";
     public static final String OVERRIDE_SWIFTKEY_TITLE = "override_swiftkey_title";
     public static final String RESIZE_KEYBOARD = "resize_keyboard";
-    public static final String KEY_LETTER_SCALE = "letter_key_bottom_text_scale";
-    public static final String KEY_LETTER_HEIGHT = "letter_key_main_text_height";
-    public static final String KEY_POPUP_LETTER_SCALE = "letter_preview_popup_text_scale";
     public static final String KEY_DEBUG = "debug";
     public static final String KEY_DUMP_LOGCAT = "dump_logcat";
     private static SharedPreferences prefs;
@@ -42,7 +43,7 @@ public class XSwiftkeyActivity extends PreferenceActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        String MY_PACKAGE_NAME = XSwiftkeyActivity.class.getPackage().getName();
+        String MY_PACKAGE_NAME = getApplicationContext().getPackageName();
         File prefsFile = new File(Environment.getDataDirectory(),
                 "data/" + MY_PACKAGE_NAME + "/shared_prefs/" + MY_PACKAGE_NAME + "_preferences.xml");
         //noinspection ResultOfMethodCallIgnored
@@ -65,7 +66,7 @@ public class XSwiftkeyActivity extends PreferenceActivity implements
             pr.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
-                    new DialogChooseDirectory(XSwiftkeyActivity.this, XSwiftkeyActivity.this, prefs.getString(XSwiftkeyActivity.MY_THEMES_LIST
+                    new DialogChooseThemelist(XSwiftkeyActivity.this, XSwiftkeyActivity.this, prefs.getString(XSwiftkeyActivity.MY_THEMES_LIST
                             , null));
                     return false;
                 }
@@ -96,7 +97,7 @@ public class XSwiftkeyActivity extends PreferenceActivity implements
         }
         {
             final FriendlyEditTextPreference pr = new FriendlyEditTextPreference(this);
-            pr.setKey(KEY_LETTER_SCALE);
+            pr.setKey(Swiftkey.LETTER_KEY_BOTTOM_TEXT_SCALE);
             pr.setTitle(R.string.pref_letter_key_bottom_text_scale_title);
             pr.setSummary(R.string.pref_letter_key_bottom_text_scale_summary);
             pr.setDialogTitle(R.string.pref_letter_key_bottom_text_scale_title);
@@ -106,7 +107,7 @@ public class XSwiftkeyActivity extends PreferenceActivity implements
         }
         {
             final FriendlyEditTextPreference pr = new FriendlyEditTextPreference(this);
-            pr.setKey(KEY_LETTER_HEIGHT);
+            pr.setKey(Swiftkey.LETTER_KEY_MAIN_TEXT_HEIGHT);
             pr.setTitle(R.string.pref_letter_key_main_text_height_title);
             pr.setSummary(R.string.pref_letter_key_main_text_height_summary);
             pr.setDialogTitle(R.string.pref_letter_key_main_text_height_title);
@@ -116,7 +117,7 @@ public class XSwiftkeyActivity extends PreferenceActivity implements
         }
         {
             final FriendlyEditTextPreference pr = new FriendlyEditTextPreference(this);
-            pr.setKey(KEY_POPUP_LETTER_SCALE);
+            pr.setKey(Swiftkey.LETTER_PREVIEW_POPUP_TEXT_SCALE);
             pr.setTitle(R.string.pref_letter_preview_popup_text_scale_title);
             pr.setSummary(R.string.pref_letter_preview_popup_text_scale_summary);
             pr.setDialogTitle(R.string.pref_letter_preview_popup_text_scale_title);
@@ -127,9 +128,9 @@ public class XSwiftkeyActivity extends PreferenceActivity implements
         if(prefs.getString(XSwiftkeyActivity.MY_THEMES_LIST, "Not set").equals("Not set")) {
             getPreferenceScreen().findPreference(OVERRIDE_SWIFTKEY_TITLE).setEnabled(false);
         }
-        getPreferenceScreen().findPreference(KEY_LETTER_SCALE).setDependency(RESIZE_KEYBOARD);
-        getPreferenceScreen().findPreference(KEY_LETTER_HEIGHT).setDependency(RESIZE_KEYBOARD);
-        getPreferenceScreen().findPreference(KEY_POPUP_LETTER_SCALE).setDependency(RESIZE_KEYBOARD);
+        getPreferenceScreen().findPreference(Swiftkey.LETTER_KEY_BOTTOM_TEXT_SCALE).setDependency(RESIZE_KEYBOARD);
+        getPreferenceScreen().findPreference(Swiftkey.LETTER_KEY_MAIN_TEXT_HEIGHT).setDependency(RESIZE_KEYBOARD);
+        getPreferenceScreen().findPreference(Swiftkey.LETTER_PREVIEW_POPUP_TEXT_SCALE).setDependency(RESIZE_KEYBOARD);
         PreferenceCategory apply = new PreferenceCategory(this);
         apply.setTitle(R.string.pref_category_apply_title);
         prefScreen.addPreference(apply);
