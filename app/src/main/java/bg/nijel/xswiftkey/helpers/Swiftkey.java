@@ -24,8 +24,8 @@ public class Swiftkey {
     private static final String CLASS_ASSET_THEME_HEADER = "com.touchtype.keyboard.theme.a";
     private static final String CLASS_ASSET_THEME_HEADER_BETA = "com.touchtype.keyboard.h.a";
 
-    private static final String CLASS_PREINSTALLED_THEME_HEADER = "com.touchtype.keyboard.theme.h";
-    private static final String CLASS_PREINSTALLED_THEME_HEADER_BETA = "com.touchtype.keyboard.h.h";
+    private static final String CLASS_PRE_INSTALLED_THEME_HEADER = "com.touchtype.keyboard.theme.h";
+    private static final String CLASS_PRE_INSTALLED_THEME_HEADER_BETA = "com.touchtype.keyboard.h.h";
 
 
     private static final String CLASS_THEME_HEADER = "com.touchtype.keyboard.theme.k";
@@ -48,8 +48,8 @@ public class Swiftkey {
     private static final String CLASS_IMMUTABLE_MAP_A_BETA = "com.google.common.collect.av.a";
     private static final String METHOD_THEMES_SET = "b";  // args [Object.class, Object.class]
 
-    private static final String CLASS_THEME_LIST_ADAPTER = "com.touchtype.materialsettings.themessettings.e";
-    private static final String CLASS_THEME_LIST_ADAPTER_BETA = "com.touchtype.materialsettings.themessettings.e";
+    private static final String CLASS_THEMES_LIST_ADAPTER = "com.touchtype.materialsettings.themessettings.e";
+    private static final String CLASS_THEMES_LIST_ADAPTER_BETA = "com.touchtype.materialsettings.themessettings.e";
     private static final String METHOD_ON_CLICK = "onClick";  // args [View.class]
 
     //* string resources we are interested in

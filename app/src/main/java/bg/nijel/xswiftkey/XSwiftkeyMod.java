@@ -150,7 +150,7 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                                 if (param.getResult() != null && param.args[0] instanceof String) {
                                     if (param.args[1].getClass().getName().equals(getClassFor("ASSET_THEME_HEADER"))
                                             || param.args[1].getClass().getName().equals(getClassFor("DOWNLOADED_THEME_HEADER"))
-                                            || param.args[1].getClass().getName().equals(getClassFor("PREINSTALLED_THEME_HEADER"))) {
+                                            || param.args[1].getClass().getName().equals(getClassFor("PRE_INSTALLED_THEME_HEADER"))) {
                                         String id = (String) param.args[0];
                                         if (!themesSet.containsKey(id)) {
                                             themesSet.put(id, param.args[1]);
@@ -212,7 +212,7 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                                 protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                                     if (param.args[0] instanceof String) {
                                         String id = (String) param.args[0];
-                                        if (!isMyTheme(id) && param.args[1].getClass().getName().equals(getClassFor("PREINSTALLED_THEME_HEADER"))) {
+                                        if (!isMyTheme(id) && param.args[1].getClass().getName().equals(getClassFor("PRE_INSTALLED_THEME_HEADER"))) {
                                             param.setResult(null);
                                         }
                                         File dir = new File(getMyThemesFolder(), id);
@@ -350,7 +350,7 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                     });
 
                     //* save applied theme to my preferences so we can alter swiftkey behavior based on the active theme
-                    findAndHookMethod(getClassFor("THEME_LIST_ADAPTER"), lpparam.classLoader, "onClick", View.class, new XC_MethodHook() {
+                    findAndHookMethod(getClassFor("THEMES_LIST_ADAPTER"), lpparam.classLoader, "onClick", View.class, new XC_MethodHook() {
                         protected void beforeHookedMethod(final XC_MethodHook.MethodHookParam param) throws Throwable {
                             BaseAdapter adapter = (BaseAdapter) getObjectField(param.thisObject, "c");
                             Object storeImageData = adapter.getItem(getIntField(param.thisObject, "a")); //get selected theme from adapter
