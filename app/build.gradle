@@ -1,5 +1,9 @@
 apply plugin: 'com.android.application'
 
+repositories {
+    mavenCentral()
+}
+
 android {
     compileSdkVersion 23
     buildToolsVersion '23.0.2'
@@ -23,6 +27,15 @@ android {
     }
     productFlavors {
     }
+
+    packagingOptions{
+        exclude 'META-INF/ECLIPSEF.SF'
+        exclude 'META-INF/ECLIPSEF.RSA'
+        exclude 'META-INF/eclipse.inf'
+        exclude 'about_files/LICENSE.txt'
+        exclude 'about_files/NOTICE.txt'
+        exclude 'plugin.properties'
+    }
 }
 
 
@@ -33,4 +46,8 @@ apply from: project.property("MySigningConfig.signing") + ".gradle";
 
 dependencies {
     provided fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.google.guava:guava:19.0'
+    compile 'javax.annotation:javax.annotation-api:1.2'
+    compile 'com.google.code.findbugs:jsr305:3.0.0'
+    compile 'org.mod4j.org.apache.commons:cli:1.0.0'
 }
