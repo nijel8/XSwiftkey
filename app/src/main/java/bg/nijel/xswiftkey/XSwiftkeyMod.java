@@ -472,7 +472,7 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
     private void enumClasses(String swiftkeyPkg) {
         DexBackedDexFile dex = null;
         try {
-            dex = DexFileFactory.loadDexFile(new File(swiftkeyPkg), "classes.dex", Opcodes.forArtVersion(Build.VERSION.SDK_INT, false));
+            dex = DexFileFactory.loadDexFile(new File(swiftkeyPkg), "classes.dex", Opcodes.forApi(Build.VERSION.SDK_INT, false));
         } catch (IOException e) {
             e.printStackTrace();
         }
