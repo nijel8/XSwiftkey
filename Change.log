@@ -1,5 +1,6 @@
 Change log:
 v. 1.11: Added logic for dynamically locating the classes needed. At boot time module scans the Swiftkey package and grabs the names of those classes based on search criteria which are less likely to change over time. This way module is less likely to brake(I hope...) after Swiftkey update. Thanks to JesusFreke for his smali/dexlib2 library (https://github.com/JesusFreke/smali).
+Fixed forced close bug when browsing for themelist after clean install.
 
 v. 1.1: Module updated for recent Swiftkey Beta update which moved some classes around. Now module needs to know which Swiftkey package to handle so new CheckBox preference is added - check if using Swiftkey Beta, reboot.
 
