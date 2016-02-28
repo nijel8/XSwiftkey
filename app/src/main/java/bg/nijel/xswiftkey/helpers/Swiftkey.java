@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 
 public class Swiftkey {
 
+/*
     private static String[] classSources = {
             "ThemeManager.java",
             "AssetThemeHeader.java",
@@ -32,6 +33,7 @@ public class Swiftkey {
             "a[Landroid/util/DisplayMetrics;]",
             "b[Ljava/lang/Object;, Ljava/lang/Object;]",
             "onClick[Landroid/view/View;]"};
+*/
 
     //* Swiftkey package names
     public static final String PACKAGE_NAME = "com.touchtype.swiftkey";
@@ -111,12 +113,12 @@ public class Swiftkey {
         return false;
     }
 
-    public static String[] getClassSources() {
+   /* public static String[] getClassSources() {
         return classSources;
     }
 
 
     public static String[] getMethodsArgs() {
         return methodsArgs;
-    }
+    }*/
 }

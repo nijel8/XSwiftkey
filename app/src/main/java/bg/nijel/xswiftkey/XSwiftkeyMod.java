@@ -13,9 +13,9 @@ import android.widget.BaseAdapter;
 
 import org.jf.dexlib2.DexFileFactory;
 import org.jf.dexlib2.Opcodes;
+import org.jf.dexlib2.dexbacked.DexBackedAnnotation;
 import org.jf.dexlib2.dexbacked.DexBackedClassDef;
 import org.jf.dexlib2.dexbacked.DexBackedDexFile;
-import org.jf.dexlib2.dexbacked.DexBackedMethod;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -465,8 +465,8 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
         return Swiftkey.getMethodNameForPackage(method);
     }
 
-    //* scans Swiftkey "classes.dex" and grabs the names of the classes we need based on the source_file.java for the class
-    //* and declared methods it has. Those search criteria are less likely to change whit Swiftkey updates so
+    //* scans Swiftkey "classes.dex" and grabs the names of the classes we need based on source_file.java, annotations and interfaces for the particular
+    // class. Those search criteria are less likely to change whit Swiftkey updates so
     //* we are almost future proofed against Swiftkey updates (I hope...). Class name fields are assigned a value dynamically at every reboot.
     //* Using JesusFreke/smali dexlib2 library (https://github.com/JesusFreke/smali)(Thank you) for getting what we need from "classes.dex" file.
     private void enumClasses(String swiftkeyPkg) {
@@ -478,29 +478,14 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
         }
         assert dex != null;
         Set classes = dex.getClasses();
-        allclasses:
         for (Object object : classes) {
             DexBackedClassDef dbcd = (DexBackedClassDef) object;
             String source = dbcd.getSourceFile();
-            for (String s : Swiftkey.getClassSources()) {
-                if (source != null && (s.equals(source))) {
-                    if (dbcd.getSuperclass() != null && source.equals("ThemeStorage.java") && dbcd.getSuperclass().equals("Ljava/lang/Object;")) {
-                        String[] fieldValue = formatSourceClass(source, dbcd.getType());
-                        Swiftkey.setClassFieldFor(fieldValue);
-                        if (myPrefs.getBoolean(XSwiftkeyActivity.KEY_DEBUG, false)) {
-                            Log.d("Xposed", "xswiftkey CLASS: " + fieldValue[0] + " = " + getClassFor(fieldValue[0]));
-                        }
-                    }
-                    if (source.equals("ImmutableMap.java") && dbcd.getAnnotations().iterator().next().getType().equals("Ldalvik/annotation/MemberClasses;")) {
-                        continue allclasses;
-                    }
-                    if (hasMethod(dbcd)) {
-                        String[] fieldValue = formatSourceClass(source, dbcd.getType());
-                        Swiftkey.setClassFieldFor(fieldValue);
-                        if (myPrefs.getBoolean(XSwiftkeyActivity.KEY_DEBUG, false)) {
-                            Log.d("Xposed", "xswiftkey CLASS: " + fieldValue[0] + " = " + getClassFor(fieldValue[0]));
-                        }
-                    }
+            if (isMyClass(dbcd)) {
+                String[] fieldValue = formatSourceClass(source, dbcd.getType());
+                Swiftkey.setClassFieldFor(fieldValue);
+                if (myPrefs.getBoolean(XSwiftkeyActivity.KEY_DEBUG, false)) {
+                    Log.d("Xposed", "xswiftkey CLASS: " + fieldValue[0] + " = " + getClassFor(fieldValue[0]));
                 }
             }
         }
@@ -531,7 +516,55 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
         return original.substring(0, 1).toUpperCase() + original.substring(1);
     }
 
-    private boolean hasMethod(DexBackedClassDef dbcd) {
+    private boolean isMyClass(DexBackedClassDef cd) {
+        String source = cd.getSourceFile();
+        if (source == null) {
+            return false;
+        }
+        switch (source) {
+            case "ImmutableMap.java":
+                if (cd.getAnnotations().size() > 0) {
+                    for (DexBackedAnnotation a : cd.getAnnotations()) {
+                        if (a.getType().equals("Ldalvik/annotation/MemberClasses;")) {
+                            return false;
+                        }
+                    }
+                }
+                return true;
+            case "ThemeHeader.java":
+                return cd.getInterfaces().size() <= 0;
+            case "ThemeManager.java":
+                if (cd.getAnnotations().size() > 0) {
+                    for (DexBackedAnnotation a : cd.getAnnotations()) {
+                        if (a.getType().equals("Ldalvik/annotation/MemberClasses;")) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            case "AssetThemeHeader.java":
+                return cd.getInterfaces().size() <= 0;
+            case "PreInstalledThemeHeader.java":
+                return true;
+            case "DownloadedThemeHeader.java":
+                return cd.getAnnotations().size() <= 0 && cd.getInterfaces().size() <= 0;
+            case "ThemeStorage.java":
+                return true;
+            case "ThemesListAdapter.java":
+                if (cd.getInterfaces().size() > 0) {
+                    for (String s : cd.getInterfaces()) {
+                        if (s.equals("Landroid/view/View$OnClickListener;")) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            default:
+                return false;
+        }
+    }
+
+    /*private boolean hasMethod(DexBackedClassDef dbcd) {
         for (Object o : dbcd.getMethods()) {
             DexBackedMethod dbm = (DexBackedMethod) o;
             if (Arrays.asList(Swiftkey.getMethodsArgs()).contains(dbm.getName() + String.valueOf(dbm.getParameterTypes()))) {
@@ -539,5 +572,5 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
             }
         }
         return false;
-    }
+    }*/
 }
