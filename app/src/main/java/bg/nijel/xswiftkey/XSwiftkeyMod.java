@@ -4,18 +4,27 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Environment;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.BaseAdapter;
 
+import org.jf.dexlib2.DexFileFactory;
+import org.jf.dexlib2.Opcodes;
+import org.jf.dexlib2.dexbacked.DexBackedClassDef;
+import org.jf.dexlib2.dexbacked.DexBackedDexFile;
+import org.jf.dexlib2.dexbacked.DexBackedMethod;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Set;
 
 import bg.nijel.xswiftkey.helpers.Swiftkey;
 import bg.nijel.xswiftkey.service.SaveThemeIdIntentService;
@@ -86,6 +95,7 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                     Log.d("Xposed", "xswiftkey HANDLING PACKAGE: " + lpparam.packageName);
                 }
                 try {
+                    enumClasses(lpparam.appInfo.sourceDir);
                     //* module wont work if we can't find this class(after Swiftkey update for example) so -> exiting
                     Class classThemeManager;
                     //* before do the job we first will try to find all methods responsible
@@ -97,13 +107,13 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                     Method methodDeleteThemelist;
                     Method methodEmptyThemelist;
                     try {
-                        classThemeManager = findClass(getClassFor("THEME_MANAGER"), lpparam.classLoader);
+                        classThemeManager = findClass(getClassFor("ThemeManager"), lpparam.classLoader);
                         methodDeleteThemes = findMethodExact(classThemeManager, getMethodFor("DELETE_THEMES"), Context.class);
                         methodDeleteThemelist = findMethodExact(classThemeManager, getMethodFor("DELETE_THEMELIST"), Context.class);
                         methodEmptyThemelist = findMethodExact(classThemeManager, getMethodFor("EMPTY_THEMELIST"), Context.class,
-                                findClass(getClassFor("THEME_HEADER"), lpparam.classLoader));
-                    }catch(Throwable t) {
-                            XposedBridge.log(t);
+                                findClass(getClassFor("ThemeHeader"), lpparam.classLoader));
+                    } catch (Throwable t) {
+                        XposedBridge.log(t);
                         return;
                     }
 
@@ -145,12 +155,12 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
 
                     //* just building themes set for logging
                     if (myPrefs.getBoolean(XSwiftkeyActivity.KEY_DEBUG, false)) {
-                        findAndHookMethod(getClassFor("IMMUTABLE_MAP_A"), lpparam.classLoader, "b", Object.class, Object.class, new XC_MethodHook() {
+                        findAndHookMethod(getClassFor("ImmutableMap_A"), lpparam.classLoader, "b", Object.class, Object.class, new XC_MethodHook() {
                             protected void afterHookedMethod(final XC_MethodHook.MethodHookParam param) throws Throwable {
                                 if (param.getResult() != null && param.args[0] instanceof String) {
-                                    if (param.args[1].getClass().getName().equals(getClassFor("ASSET_THEME_HEADER"))
-                                            || param.args[1].getClass().getName().equals(getClassFor("DOWNLOADED_THEME_HEADER"))
-                                            || param.args[1].getClass().getName().equals(getClassFor("PRE_INSTALLED_THEME_HEADER"))) {
+                                    if (param.args[1].getClass().getName().equals(getClassFor("AssetThemeHeader"))
+                                            || param.args[1].getClass().getName().equals(getClassFor("DownloadedThemeHeader"))
+                                            || param.args[1].getClass().getName().equals(getClassFor("PreInstalledThemeHeader"))) {
                                         String id = (String) param.args[0];
                                         if (!themesSet.containsKey(id)) {
                                             themesSet.put(id, param.args[1]);
@@ -174,13 +184,13 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
 
                         protected void beforeHookedMethod(final XC_MethodHook.MethodHookParam param) throws Throwable {
 
-                            addThemes = findAndHookMethod(getClassFor("IMMUTABLE_MAP_A"), lpparam.classLoader, "b", Object.class, Object.class, new XC_MethodHook() {
+                            addThemes = findAndHookMethod(getClassFor("ImmutableMap_A"), lpparam.classLoader, "b", Object.class, Object.class, new XC_MethodHook() {
                                 @Override
                                 protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                                     if (param.args[0] instanceof String) {
                                         String id = (String) param.args[0];
                                         // File dir = new File(getMyThemesFolder(), id);
-                                        if (isMyTheme(id) && param.args[1].getClass().getName().equals(getClassFor("DOWNLOADED_THEME_HEADER"))) {
+                                        if (isMyTheme(id) && param.args[1].getClass().getName().equals(getClassFor("DownloadedThemeHeader"))) {
                                             param.setResult(null);
                                         }
                                         File dir = new File(getMyThemesFolder(), id);
@@ -207,12 +217,12 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
 
                         protected void beforeHookedMethod(final XC_MethodHook.MethodHookParam param) throws Throwable {
 
-                            addThemes = findAndHookMethod(getClassFor("IMMUTABLE_MAP_A"), lpparam.classLoader, "b", Object.class, Object.class, new XC_MethodHook() {
+                            addThemes = findAndHookMethod(getClassFor("ImmutableMap_A"), lpparam.classLoader, "b", Object.class, Object.class, new XC_MethodHook() {
                                 @Override
                                 protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                                     if (param.args[0] instanceof String) {
                                         String id = (String) param.args[0];
-                                        if (!isMyTheme(id) && param.args[1].getClass().getName().equals(getClassFor("PRE_INSTALLED_THEME_HEADER"))) {
+                                        if (!isMyTheme(id) && param.args[1].getClass().getName().equals(getClassFor("PreInstalledThemeHeader"))) {
                                             param.setResult(null);
                                         }
                                         File dir = new File(getMyThemesFolder(), id);
@@ -239,12 +249,12 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
 
                         protected void beforeHookedMethod(final XC_MethodHook.MethodHookParam param) throws Throwable {
 
-                            addThemes = findAndHookMethod(getClassFor("IMMUTABLE_MAP_A"), lpparam.classLoader, "b", Object.class, Object.class, new XC_MethodHook() {
+                            addThemes = findAndHookMethod(getClassFor("ImmutableMap_A"), lpparam.classLoader, "b", Object.class, Object.class, new XC_MethodHook() {
                                 @Override
                                 protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                                     if (param.args[0] instanceof String) {
                                         String id = (String) param.args[0];
-                                        if ((isMyTheme(id) || id.contains("default")) && param.args[1].getClass().getName().equals(getClassFor("ASSET_THEME_HEADER"))) {
+                                        if ((isMyTheme(id) || id.contains("default")) && param.args[1].getClass().getName().equals(getClassFor("AssetThemeHeader"))) {
                                             param.setResult(null);
                                         }
                                     }
@@ -271,7 +281,7 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
 
                     //* blocking attempts to unzip and checksum verify of my themes, our themes don't have SHA-1 JSON element in themelist
                     findAndHookMethod(classThemeManager, "a",
-                            findClass(getClassFor("DOWNLOADED_THEME_HEADER"), lpparam.classLoader), Context.class, new XC_MethodHook() {
+                            findClass(getClassFor("DownloadedThemeHeader"), lpparam.classLoader), Context.class, new XC_MethodHook() {
                                 String sha = null;
 
                                 protected void beforeHookedMethod(final XC_MethodHook.MethodHookParam param) throws Throwable {
@@ -302,7 +312,7 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                     });
 
                     //* get our theme folder name or "default" which is the name for store downloded themes
-                    findAndHookMethod(getClassFor("DOWNLOADED_THEME_HEADER"), lpparam.classLoader, "f", Context.class, new XC_MethodHook() {
+                    findAndHookMethod(getClassFor("DownloadedThemeHeader"), lpparam.classLoader, "f", Context.class, new XC_MethodHook() {
                         @Override
                         protected void afterHookedMethod(final XC_MethodHook.MethodHookParam param) throws Throwable {
                             if (isMyTheme(selectedThemeId)) {
@@ -311,18 +321,18 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                             if (myPrefs.getBoolean(XSwiftkeyActivity.KEY_DEBUG, false)) {
                                 Log.d("Xposed", "xswiftkey APPLY THEME: " + param.getResult());
                                 if (myPrefs.getBoolean(XSwiftkeyActivity.KEY_DUMP_LOGCAT, false)) {
-                                        saveCurrentThemeId((Context) param.args[0], SaveThemeIdIntentService.SAVE_LOGCAT);
+                                    saveCurrentThemeId((Context) param.args[0], SaveThemeIdIntentService.SAVE_LOGCAT);
                                 }
                             }
                         }
                     });
 
                     //* dealing with themes thumbnails... don't copy swiftkey themes thumbnails...
-                    findAndHookMethod(getClassFor("DOWNLOADED_THEME_HEADER"), lpparam.classLoader, "a", Context.class,
-                            findClass(getClassFor("THEME_STORAGE"), lpparam.classLoader), XC_MethodReplacement.DO_NOTHING);
+                    findAndHookMethod(getClassFor("DownloadedThemeHeader"), lpparam.classLoader, "a", Context.class,
+                            findClass(getClassFor("ThemeStorage"), lpparam.classLoader), XC_MethodReplacement.DO_NOTHING);
 
                     //* ... get display density...
-                    findAndHookMethod(getClassFor("THEME_STORAGE_A"), lpparam.classLoader, "a", DisplayMetrics.class, new XC_MethodHook() {
+                    findAndHookMethod(getClassFor("ThemeStorage_A"), lpparam.classLoader, "a", DisplayMetrics.class, new XC_MethodHook() {
                         protected void afterHookedMethod(final XC_MethodHook.MethodHookParam param) throws Throwable {
                             scrDensityFolder = (String) callMethod(param.getResult(), "b");
                             if (myPrefs.getBoolean(XSwiftkeyActivity.KEY_DEBUG, false)) {
@@ -332,7 +342,7 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                     });
 
                     //* ... and use my existing thumbnails (don't copy them, we alredy have thumbnails)
-                    findAndHookMethod(getClassFor("DOWNLOADED_THEME_HEADER"), lpparam.classLoader, "d", Context.class, new XC_MethodReplacement() {
+                    findAndHookMethod(getClassFor("DownloadedThemeHeader"), lpparam.classLoader, "d", Context.class, new XC_MethodReplacement() {
                         @Override
                         protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
                             String id = (String) callMethod(param.thisObject, "b");
@@ -350,7 +360,7 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                     });
 
                     //* save applied theme to my preferences so we can alter swiftkey behavior based on the active theme
-                    findAndHookMethod(getClassFor("THEMES_LIST_ADAPTER"), lpparam.classLoader, "onClick", View.class, new XC_MethodHook() {
+                    findAndHookMethod(getClassFor("ThemesListAdapter"), lpparam.classLoader, "onClick", View.class, new XC_MethodHook() {
                         protected void beforeHookedMethod(final XC_MethodHook.MethodHookParam param) throws Throwable {
                             BaseAdapter adapter = (BaseAdapter) getObjectField(param.thisObject, "c");
                             Object storeImageData = adapter.getItem(getIntField(param.thisObject, "a")); //get selected theme from adapter
@@ -443,15 +453,91 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
         count = themesSet.size();
     }
 
-    private String whichSwiftkey(){
+    private String whichSwiftkey() {
         return myPrefs.getBoolean(XSwiftkeyActivity.HANDLE_BETA, false) ? Swiftkey.PACKAGE_NAME_BETA : Swiftkey.PACKAGE_NAME;
     }
 
-    private String getClassFor(String clazz){
-        return Swiftkey.getClassNameForPackage(clazz, myPrefs.getBoolean(XSwiftkeyActivity.HANDLE_BETA, false));
+    private String getClassFor(String clazz) {
+        return Swiftkey.getClassNameForPackage(clazz);
     }
 
-    private String getMethodFor(String method){
-        return Swiftkey.getMethodNameForPackage(method/*, myPrefs.getBoolean(XSwiftkeyActivity.HANDLE_BETA, false)*/);
+    private String getMethodFor(String method) {
+        return Swiftkey.getMethodNameForPackage(method);
+    }
+
+    //* scans Swiftkey "classes.dex" and grabs the names of the classes we need based on the source_file.java for the class
+    //* and declared methods it has. Those search criteria are less likely to change whit Swiftkey updates so
+    //* we are almost future proofed against Swiftkey updates (I hope...). Class name fields are assigned a value dynamically at every reboot.
+    //* Using JesusFreke/smali dexlib2 library (https://github.com/JesusFreke/smali)(Thank you) for getting what we need from "classes.dex" file.
+    private void enumClasses(String swiftkeyPkg) {
+        DexBackedDexFile dex = null;
+        try {
+            dex = DexFileFactory.loadDexFile(new File(swiftkeyPkg), "classes.dex", Opcodes.forArtVersion(Build.VERSION.SDK_INT, false));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        assert dex != null;
+        Set classes = dex.getClasses();
+        allclasses:
+        for (Object object : classes) {
+            DexBackedClassDef dbcd = (DexBackedClassDef) object;
+            String source = dbcd.getSourceFile();
+            for (String s : Swiftkey.getClassSources()) {
+                if (source != null && (s.equals(source))) {
+                    if (dbcd.getSuperclass() != null && source.equals("ThemeStorage.java") && dbcd.getSuperclass().equals("Ljava/lang/Object;")) {
+                        String[] fieldValue = formatSourceClass(source, dbcd.getType());
+                        Swiftkey.setClassFieldFor(fieldValue);
+                        if (myPrefs.getBoolean(XSwiftkeyActivity.KEY_DEBUG, false)) {
+                            Log.d("Xposed", "xswiftkey CLASS: " + fieldValue[0] + " = " + getClassFor(fieldValue[0]));
+                        }
+                    }
+                    if (source.equals("ImmutableMap.java") && dbcd.getAnnotations().iterator().next().getType().equals("Ldalvik/annotation/MemberClasses;")) {
+                        continue allclasses;
+                    }
+                    if (hasMethod(dbcd)) {
+                        String[] fieldValue = formatSourceClass(source, dbcd.getType());
+                        Swiftkey.setClassFieldFor(fieldValue);
+                        if (myPrefs.getBoolean(XSwiftkeyActivity.KEY_DEBUG, false)) {
+                            Log.d("Xposed", "xswiftkey CLASS: " + fieldValue[0] + " = " + getClassFor(fieldValue[0]));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private String[] formatSourceClass(String sourceJava, String className) {
+        if (sourceJava.contains(".java")) {
+            sourceJava = sourceJava.replace(".java", "");
+        }
+        if (className.contains("$")) {
+            String[] atemp = className.split("\\$");
+            for (int i = 0; i < atemp.length; i++) {
+                if (i > 0) {
+                    sourceJava = sourceJava + "_" + capitalizeFirstLetter(atemp[i]).replace(";", "");
+                }
+            }
+        }
+        className = className.replace("/", ".");
+        className = className.replace("$", ".");
+        className = className.substring(1, className.length() - 1);
+        return new String[]{sourceJava, className};
+    }
+
+    private String capitalizeFirstLetter(String original) {
+        if (original == null || original.length() == 0) {
+            return original;
+        }
+        return original.substring(0, 1).toUpperCase() + original.substring(1);
+    }
+
+    private boolean hasMethod(DexBackedClassDef dbcd) {
+        for (Object o : dbcd.getMethods()) {
+            DexBackedMethod dbm = (DexBackedMethod) o;
+            if (Arrays.asList(Swiftkey.getMethodsArgs()).contains(dbm.getName() + String.valueOf(dbm.getParameterTypes()))) {
+                return true;
+            }
+        }
+        return false;
     }
 }
