@@ -67,7 +67,7 @@ public class XSwiftkeyActivity extends PreferenceActivity implements
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
                     new DialogChooseThemelist(XSwiftkeyActivity.this, XSwiftkeyActivity.this, prefs.getString(XSwiftkeyActivity.MY_THEMES_LIST
-                            , null));
+                            , "Not set"));
                     return false;
                 }
             });
@@ -240,6 +240,12 @@ public class XSwiftkeyActivity extends PreferenceActivity implements
             if(!debug.isChecked()){
                 CheckBoxPreference dump = (CheckBoxPreference) getPreferenceScreen().findPreference(KEY_DUMP_LOGCAT);
                 dump.setChecked(false);
+            }
+        }
+        if(key.equals(MY_THEMES_LIST)){
+           // CheckBoxPreference themelist = (CheckBoxPreference) getPreferenceScreen().findPreference(key);
+            if(prefs.getString(XSwiftkeyActivity.MY_THEMES_LIST, "Not set").contains("themelist.json")) {
+                getPreferenceScreen().findPreference(OVERRIDE_SWIFTKEY_TITLE).setEnabled(true);
             }
         }
     }
