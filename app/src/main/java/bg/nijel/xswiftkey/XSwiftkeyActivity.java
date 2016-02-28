@@ -66,8 +66,8 @@ public class XSwiftkeyActivity extends PreferenceActivity implements
             pr.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
-                    new DialogChooseThemelist(XSwiftkeyActivity.this, XSwiftkeyActivity.this, prefs.getString(XSwiftkeyActivity.MY_THEMES_LIST
-                            , "Not set"));
+                    new DialogChooseThemelist(XSwiftkeyActivity.this, XSwiftkeyActivity.this,
+                            prefs.getString(XSwiftkeyActivity.MY_THEMES_LIST, "Not set"));
                     return false;
                 }
             });
