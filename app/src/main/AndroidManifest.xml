@@ -27,6 +27,7 @@
             <intent-filter>
                 <action android:name="bg.nijel.xswiftkey.SAVE_CURRENT_THEME" />
                 <action android:name="bg.nijel.xswiftkey.SAVE_LOGCAT" />
+                <action android:name="bg.nijel.xswiftkey.ADD_TO_LOGCAT" />
             </intent-filter>
         </service>
         <meta-data android:name="xposedmodule" android:value="true" />
