@@ -370,6 +370,7 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                             saveCurrentThemeId(swiftContext, SaveThemeIdIntentService.SAVE_CURRENT_THEME);
                             if (myPrefs.getBoolean(XSwiftkeyActivity.KEY_DEBUG, false)) {
                                 Log.d("Xposed", "xswiftkey ONCLICK THEME: " + selectedThemeId);
+                                saveCurrentThemeId(swiftContext, SaveThemeIdIntentService.ADD_TO_LOGCAT);
                             }
                         }
                     });
@@ -419,6 +420,10 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
         if (action.equals(SaveThemeIdIntentService.SAVE_LOGCAT)) {
             i.removeExtra("saveTheme");
             i.putExtra("lastBootTime", lastBootTime);
+        }
+        if (action.equals(SaveThemeIdIntentService.ADD_TO_LOGCAT)) {
+            i.removeExtra("saveTheme");
+            i.removeExtra("lastBootTime");
         }
         assert myContext != null;
         myContext.startService(i);

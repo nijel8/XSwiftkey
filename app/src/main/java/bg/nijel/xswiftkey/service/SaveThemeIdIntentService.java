@@ -21,6 +21,7 @@ public class SaveThemeIdIntentService extends IntentService {
     public static final String CURRENT_THEME = "current_theme";
     public static final String SAVE_CURRENT_THEME = "bg.nijel.xswiftkey.SAVE_CURRENT_THEME";
     public static final String SAVE_LOGCAT = "bg.nijel.xswiftkey.SAVE_LOGCAT";
+    public static final String ADD_TO_LOGCAT = "bg.nijel.xswiftkey.ADD_TO_LOGCAT";
 
     public SaveThemeIdIntentService() {
         super("SaveThemeIdIntentService");
@@ -54,6 +55,26 @@ public class SaveThemeIdIntentService extends IntentService {
                 ps = new PrintStream(new BufferedOutputStream(suProcess.getOutputStream(), 32768));
                 ps.print("logcat -b system -b events -b crash -b main -v time -t '" + sdf.format(lastBootTime - 30000l)
                         + "' | grep 'swiftkey' > /sdcard/Xswiftkey.logcat\n");
+                ps.flush();
+                ps.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        if (intent.getAction().equals(ADD_TO_LOGCAT)) {
+            if (!new File("/sdcard/Xswiftkey.logcat").exists()){
+                return;
+            }
+            long lastTime = System.currentTimeMillis();
+            SimpleDateFormat sdf = new SimpleDateFormat("MM-dd HH:mm:ss.mmm", Locale.US);
+            Log.d("Xposed", "xswiftkey Adding to /sdcard/Xswiftkey.logcat...");
+            Process suProcess = null;
+            try {
+                suProcess = Runtime.getRuntime().exec("su");
+                PrintStream ps;
+                ps = new PrintStream(new BufferedOutputStream(suProcess.getOutputStream(), 32768));
+                ps.print("logcat -b system -b events -b crash -b main -v time -t '" + sdf.format(lastTime - 5000)
+                        + "' | grep 'swiftkey' >> /sdcard/Xswiftkey.logcat\n");
                 ps.flush();
                 ps.close();
             } catch (IOException e) {
