@@ -28,12 +28,13 @@ android {
     productFlavors {
     }
 
-    packagingOptions{
+    packagingOptions {
         exclude 'META-INF/ECLIPSEF.SF'
         exclude 'META-INF/ECLIPSEF.RSA'
         exclude 'META-INF/eclipse.inf'
         exclude 'about_files/LICENSE.txt'
         exclude 'about_files/NOTICE.txt'
+        exclude 'about_files/README.txt'
         exclude 'plugin.properties'
     }
 }
