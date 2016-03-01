@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Environment;
 import android.util.DisplayMetrics;
@@ -92,6 +94,7 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                 , "Not set").equals("Not set")) {
             if (lpparam.packageName.equals(whichSwiftkey())) {
                 if (myPrefs.getBoolean(XSwiftkeyActivity.KEY_DEBUG, false)) {
+                    Log.d("Xposed", "xswiftkey ANDROID VERSION: " + Build.VERSION.SDK_INT);
                     Log.d("Xposed", "xswiftkey HANDLING PACKAGE: " + lpparam.packageName);
                 }
                 try {
@@ -131,6 +134,12 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
 
                         protected void afterHookedMethod(final XC_MethodHook.MethodHookParam param) throws Throwable {
                             if (myPrefs.getBoolean(XSwiftkeyActivity.KEY_DEBUG, false)) {
+                                Context cxt = (Context) param.args[0];
+                                PackageManager pm = cxt.getPackageManager();
+                                PackageInfo info = pm.getPackageInfo(MY_PACKAGE_NAME, PackageManager.GET_META_DATA);
+                                PackageInfo infoS = pm.getPackageInfo(lpparam.packageName, PackageManager.GET_META_DATA);
+                                Log.d("Xposed", "xswiftkey MODULE VERSION: " + info.versionName);
+                                Log.d("Xposed", "xswiftkey SWIFTKEY VERSION: " + infoS.versionName);
                                 Log.d("Xposed", "xswiftkey THEMES FOLDER: >" + param.getResult() + "<");
                                 logSaveToDeleteThemes();
                             }
