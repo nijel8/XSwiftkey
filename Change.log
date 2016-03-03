@@ -1,5 +1,5 @@
 Change log:
-v. 1.12: More bulletproofed logic for locating classes. Now module keeps logging to "/sdcard/Xswiftkey.logcat" if debugging and export is enabled and theme is applied in Swiftkey theme settings saving any errors might occure.
+v. 1.12: Fix for new Swiftkey Beta update, Now module keeps logging to "/sdcard/Xswiftkey.logcat" if debugging and export is enabled and theme is applied in Swiftkey theme settings saving any errors might occure.
 
 v. 1.11: Added logic for dynamically locating the classes needed. At boot time module scans the Swiftkey package and grabs the names of those classes based on search criteria which are less likely to change over time. This way module is less likely to brake(I hope...) after Swiftkey update. Thanks to JesusFreke for his smali/dexlib2 library (https://github.com/JesusFreke/smali).
 Fixed forced close bug when browsing for themelist after clean install.
