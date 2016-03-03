@@ -127,7 +127,7 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                     }
 
                     //* changing swiftkey downloaded themes folder to my themes folder...
-                    findAndHookMethod(classThemeManager, "b", Context.class, new XC_MethodHook() {
+                    findAndHookMethod(classThemeManager, getMethodFor("THEME_FOLDER"), Context.class, new XC_MethodHook() {
                         protected void beforeHookedMethod(final XC_MethodHook.MethodHookParam param) throws Throwable {
                             param.setResult(getMyThemesFolder());
                         }
@@ -147,7 +147,7 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                     });
 
                     //* consider my themes as preinstalled so we can select them in swiftkey themes preferences...
-                    findAndHookMethod(classThemeManager, "h", Context.class, new XC_MethodHook() {
+                    findAndHookMethod(classThemeManager, getMethodFor("THEMELIST"), Context.class, new XC_MethodHook() {
                         protected void beforeHookedMethod(final XC_MethodHook.MethodHookParam param) throws Throwable {
                             param.setResult(new File(myPrefs.getString(XSwiftkeyActivity.MY_THEMES_LIST, "")));
                         }
@@ -164,7 +164,7 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
 
                     //* just building themes set for logging
                     if (myPrefs.getBoolean(XSwiftkeyActivity.KEY_DEBUG, false)) {
-                        findAndHookMethod(getClassFor("ImmutableMap_A"), lpparam.classLoader, "b", Object.class, Object.class, new XC_MethodHook() {
+                        findAndHookMethod(getClassFor("ImmutableMap_A"), lpparam.classLoader, getMethodFor("THEMES_SET"), Object.class, Object.class, new XC_MethodHook() {
                             protected void afterHookedMethod(final XC_MethodHook.MethodHookParam param) throws Throwable {
                                 if (param.getResult() != null && param.args[0] instanceof String) {
                                     if (param.args[1].getClass().getName().equals(getClassFor("AssetThemeHeader"))
@@ -187,13 +187,13 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                     }
 
                     //* don't add my themes to downloaded themes set or discard them if missing from themes folder
-                    findAndHookMethod(classThemeManager, "n", Context.class, new XC_MethodHook() {
+                    findAndHookMethod(classThemeManager, getMethodFor("STORE_THEMES"), Context.class, new XC_MethodHook() {
 
                         XC_MethodHook.Unhook addThemes;
 
                         protected void beforeHookedMethod(final XC_MethodHook.MethodHookParam param) throws Throwable {
 
-                            addThemes = findAndHookMethod(getClassFor("ImmutableMap_A"), lpparam.classLoader, "b", Object.class, Object.class, new XC_MethodHook() {
+                            addThemes = findAndHookMethod(getClassFor("ImmutableMap_A"), lpparam.classLoader, getMethodFor("THEMES_SET"), Object.class, Object.class, new XC_MethodHook() {
                                 @Override
                                 protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                                     if (param.args[0] instanceof String) {
@@ -220,13 +220,13 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                     });
 
                     //* don't add store themes to preinstalled themes set or discard them if missing from themes folder
-                    findAndHookMethod(classThemeManager, "p", Context.class, new XC_MethodHook() {
+                    findAndHookMethod(classThemeManager, getMethodFor("PREINSTALLED_THEMES"), Context.class, new XC_MethodHook() {
 
                         XC_MethodHook.Unhook addThemes;
 
                         protected void beforeHookedMethod(final XC_MethodHook.MethodHookParam param) throws Throwable {
 
-                            addThemes = findAndHookMethod(getClassFor("ImmutableMap_A"), lpparam.classLoader, "b", Object.class, Object.class, new XC_MethodHook() {
+                            addThemes = findAndHookMethod(getClassFor("ImmutableMap_A"), lpparam.classLoader, getMethodFor("THEMES_SET"), Object.class, Object.class, new XC_MethodHook() {
                                 @Override
                                 protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                                     if (param.args[0] instanceof String) {
@@ -252,13 +252,13 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                     });
 
                     //* don't add assets themes to themes set if we alredy have same theme in our theme collection
-                    findAndHookMethod(classThemeManager, "q", Context.class, new XC_MethodHook() {
+                    findAndHookMethod(classThemeManager, getMethodFor("ASSETS_THEMES"), Context.class, new XC_MethodHook() {
 
                         XC_MethodHook.Unhook addThemes;
 
                         protected void beforeHookedMethod(final XC_MethodHook.MethodHookParam param) throws Throwable {
 
-                            addThemes = findAndHookMethod(getClassFor("ImmutableMap_A"), lpparam.classLoader, "b", Object.class, Object.class, new XC_MethodHook() {
+                            addThemes = findAndHookMethod(getClassFor("ImmutableMap_A"), lpparam.classLoader, getMethodFor("THEMES_SET"), Object.class, Object.class, new XC_MethodHook() {
                                 @Override
                                 protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                                     if (param.args[0] instanceof String) {
@@ -289,7 +289,7 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                     });
 
                     //* blocking attempts to unzip and checksum verify of my themes, our themes don't have SHA-1 JSON element in themelist
-                    findAndHookMethod(classThemeManager, "a",
+                    findAndHookMethod(classThemeManager, getMethodFor("UNZIP_THEME"),
                             findClass(getClassFor("DownloadedThemeHeader"), lpparam.classLoader), Context.class, new XC_MethodHook() {
                                 String sha = null;
 
@@ -321,7 +321,7 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                     });
 
                     //* get our theme folder name or "default" which is the name for store downloded themes
-                    findAndHookMethod(getClassFor("DownloadedThemeHeader"), lpparam.classLoader, "f", Context.class, new XC_MethodHook() {
+                    findAndHookMethod(getClassFor("DownloadedThemeHeader"), lpparam.classLoader, getMethodFor("APPLY_THEME_FOLDER"), Context.class, new XC_MethodHook() {
                         @Override
                         protected void afterHookedMethod(final XC_MethodHook.MethodHookParam param) throws Throwable {
                             if (isMyTheme(selectedThemeId)) {
@@ -337,11 +337,11 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                     });
 
                     //* dealing with themes thumbnails... don't copy swiftkey themes thumbnails...
-                    findAndHookMethod(getClassFor("DownloadedThemeHeader"), lpparam.classLoader, "a", Context.class,
+                    findAndHookMethod(getClassFor("DownloadedThemeHeader"), lpparam.classLoader, getMethodFor("STORE_THEME_TUMBNAIL"), Context.class,
                             findClass(getClassFor("ThemeStorage"), lpparam.classLoader), XC_MethodReplacement.DO_NOTHING);
 
                     //* ... get display density...
-                    findAndHookMethod(getClassFor("ThemeStorage_A"), lpparam.classLoader, "a", DisplayMetrics.class, new XC_MethodHook() {
+                    findAndHookMethod(getClassFor("ThemeStorage_A"), lpparam.classLoader, getMethodFor("DPI_THEME_SUBFOLDER"), DisplayMetrics.class, new XC_MethodHook() {
                         protected void afterHookedMethod(final XC_MethodHook.MethodHookParam param) throws Throwable {
                             scrDensityFolder = (String) callMethod(param.getResult(), "b");
                             if (myPrefs.getBoolean(XSwiftkeyActivity.KEY_DEBUG, false)) {
@@ -351,7 +351,7 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                     });
 
                     //* ... and use my existing thumbnails (don't copy them, we alredy have thumbnails)
-                    findAndHookMethod(getClassFor("DownloadedThemeHeader"), lpparam.classLoader, "d", Context.class, new XC_MethodReplacement() {
+                    findAndHookMethod(getClassFor("DownloadedThemeHeader"), lpparam.classLoader, getMethodFor("PREINSTALLED_THEME_TUMBNAIL"), Context.class, new XC_MethodReplacement() {
                         @Override
                         protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
                             String id = (String) callMethod(param.thisObject, "b");
@@ -369,7 +369,7 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                     });
 
                     //* save applied theme to my preferences so we can alter swiftkey behavior based on the active theme
-                    findAndHookMethod(getClassFor("ThemesListAdapter"), lpparam.classLoader, "onClick", View.class, new XC_MethodHook() {
+                    findAndHookMethod(getClassFor("ThemesListAdapter"), lpparam.classLoader, getMethodFor("ON_CLICK"), View.class, new XC_MethodHook() {
                         protected void beforeHookedMethod(final XC_MethodHook.MethodHookParam param) throws Throwable {
                             BaseAdapter adapter = (BaseAdapter) getObjectField(param.thisObject, "c");
                             Object storeImageData = adapter.getItem(getIntField(param.thisObject, "a")); //get selected theme from adapter
