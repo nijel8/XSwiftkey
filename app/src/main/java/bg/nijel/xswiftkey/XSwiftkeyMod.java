@@ -283,7 +283,7 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                     hookMethod(methodDeleteThemelist, new XC_MethodReplacement() {
                         @Override
                         protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                            callMethod(param.thisObject, "l", param.args[0]);
+                            callMethod(param.thisObject, getMethodFor("CALL_ALL_THEMES"), param.args[0]);
                             return null;
                         }
                     });
@@ -294,7 +294,7 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                                 String sha = null;
 
                                 protected void beforeHookedMethod(final XC_MethodHook.MethodHookParam param) throws Throwable {
-                                    sha = (String) callMethod(param.args[0], "a");
+                                    sha = (String) callMethod(param.args[0], getMethodFor("CALL_SHA"));
                                     if (myPrefs.getBoolean(XSwiftkeyActivity.KEY_DEBUG, false)) {
                                         Log.d("Xposed", "xswiftkey THEME SHA-1 null? " + (sha == null));
                                     }
@@ -313,7 +313,7 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                     //* blocking new empty themelist write if load theme failed
                     hookMethod(methodEmptyThemelist, new XC_MethodHook() {
                         protected void beforeHookedMethod(final XC_MethodHook.MethodHookParam param) throws Throwable {
-                            String id = (String) callMethod(param.args[1], "b");
+                            String id = (String) callMethod(param.args[1], getMethodFor("CALL_THEME_ID"));
                             if (id.equals(selectedThemeId)) {
                                 param.setResult(null);
                             }
@@ -343,7 +343,7 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                     //* ... get display density...
                     findAndHookMethod(getClassFor("ThemeStorage_A"), lpparam.classLoader, getMethodFor("DPI_THEME_SUBFOLDER"), DisplayMetrics.class, new XC_MethodHook() {
                         protected void afterHookedMethod(final XC_MethodHook.MethodHookParam param) throws Throwable {
-                            scrDensityFolder = (String) callMethod(param.getResult(), "b");
+                            scrDensityFolder = param.getResult().toString().toLowerCase();
                             if (myPrefs.getBoolean(XSwiftkeyActivity.KEY_DEBUG, false)) {
                                 Log.d("Xposed", "xswiftkey DENSITY: " + scrDensityFolder);
                             }
@@ -354,7 +354,7 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                     findAndHookMethod(getClassFor("DownloadedThemeHeader"), lpparam.classLoader, getMethodFor("PREINSTALLED_THEME_TUMBNAIL"), Context.class, new XC_MethodReplacement() {
                         @Override
                         protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                            String id = (String) callMethod(param.thisObject, "b");
+                            String id = (String) callMethod(param.thisObject, getMethodFor("CALL_THEME_ID"));
                             if (isMyTheme(id)) {
                                 File thumbnail = new File(getMyThemesFolder(), id + File.separator
                                         + scrDensityFolder + File.separator + "thumbnail.png");
@@ -371,10 +371,10 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                     //* save applied theme to my preferences so we can alter swiftkey behavior based on the active theme
                     findAndHookMethod(getClassFor("ThemesListAdapter"), lpparam.classLoader, getMethodFor("ON_CLICK"), View.class, new XC_MethodHook() {
                         protected void beforeHookedMethod(final XC_MethodHook.MethodHookParam param) throws Throwable {
-                            BaseAdapter adapter = (BaseAdapter) getObjectField(param.thisObject, "c");
-                            Object storeImageData = adapter.getItem(getIntField(param.thisObject, "a")); //get selected theme from adapter
-                            selectedThemeId = (String) callMethod(storeImageData, "a"); // get selected theme ID
-                            Activity activity = (Activity) getObjectField(getObjectField(param.thisObject, "c"), "a");
+                            BaseAdapter adapter = (BaseAdapter) getObjectField(param.thisObject, getFieldFor("OBJ_ADAPTER"));
+                            Object storeImageData = adapter.getItem(getIntField(param.thisObject, getFieldFor("INT_STORE_IMAGE_DATA"))); //get selected theme from adapter
+                            selectedThemeId = (String) callMethod(storeImageData, getMethodFor("CALL_SELECTED_THEME_ID")); // get selected theme ID
+                            Activity activity = (Activity) getObjectField(adapter, getFieldFor("OBJ_ACTIVITY"));
                             Context swiftContext = activity.getApplicationContext();
                             saveCurrentThemeId(swiftContext, SaveThemeIdIntentService.SAVE_CURRENT_THEME);
                             if (myPrefs.getBoolean(XSwiftkeyActivity.KEY_DEBUG, false)) {
@@ -472,11 +472,15 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
     }
 
     private String getClassFor(String clazz) {
-        return Swiftkey.getClassNameForPackage(clazz);
+        return Swiftkey.getClassField(clazz);
     }
 
     private String getMethodFor(String method) {
-        return Swiftkey.getMethodNameForPackage(method);
+        return Swiftkey.getMethodField(method, myPrefs.getBoolean(XSwiftkeyActivity.HANDLE_BETA, false));
+    }
+
+    private String getFieldFor(String fld) {
+        return Swiftkey.getFieldField(fld, myPrefs.getBoolean(XSwiftkeyActivity.HANDLE_BETA, false));
     }
 
     //* scans Swiftkey "classes.dex" and grabs the names of the classes we need based on source_file.java, annotations and interfaces for the particular

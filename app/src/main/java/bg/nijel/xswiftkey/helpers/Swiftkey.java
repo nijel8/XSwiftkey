@@ -51,17 +51,21 @@ public class Swiftkey {
     private static final String METHOD_EMPTY_THEMELIST = "a";  // args [Context.class, CLASS_THEME_HEADER]
     private static final String METHOD_UNZIP_THEME = "a";  // args [CLASS_DOWNLOADED_THEME_HEADER, Context.class]
 
+    private static final String METHOD_CALL_ALL_THEMES = "l";  // args [Context.class]
+
     private static final String CLASS_AssetThemeHeader = null/*"com.touchtype.keyboard.theme.a"*/;
 
     private static final String CLASS_PreInstalledThemeHeader = null/*"com.touchtype.keyboard.theme.h"*/;
 
 
     private static final String CLASS_ThemeHeader = null/*"com.touchtype.keyboard.theme.k"*/;
+    private static final String METHOD_CALL_THEME_ID = "b";  // args []
 
     private static final String CLASS_DownloadedThemeHeader = null/*"com.touchtype.keyboard.theme.d"*/;
     private static final String METHOD_APPLY_THEME_FOLDER = "f";  // args [Context.class]
     private static final String METHOD_STORE_THEME_TUMBNAIL = "a";  // args [Context.class, CLASS_THEME_STORAGE]
     private static final String METHOD_PREINSTALLED_THEME_TUMBNAIL = "d";  // args [Context.class]
+    private static final String METHOD_CALL_SHA = "a";  // args []
 
     private static final String CLASS_ThemeStorage = null/*"com.touchtype.themes.e.a"*/;
 
@@ -69,10 +73,17 @@ public class Swiftkey {
     private static final String METHOD_DPI_THEME_SUBFOLDER = "a";  // args [DisplayMetrics.class]
 
     private static final String CLASS_ImmutableMap_A = null/*"com.google.common.collect.av.a"*/;
-    private static final String METHOD_THEMES_SET = "a";  // args [Object.class, Object.class]
+    private static final String METHOD_THEMES_SET = "b";  // args [Object.class, Object.class]
+    private static final String METHOD_THEMES_SET_BETA = "a";  // args [Object.class, Object.class]
 
     private static final String CLASS_ThemesListAdapter = null/*"com.touchtype.materialsettings.themessettings.e"*/;
     private static final String METHOD_ON_CLICK = "onClick";  // args [View.class]
+
+    private static final String METHOD_CALL_SELECTED_THEME_ID = "a";  // args []
+
+    private static final String FIELD_OBJ_ADAPTER = "c";  // CLASS_ThemesListAdapter
+    private static final String FIELD_INT_STORE_IMAGE_DATA = "a";  // CLASS_ThemesListAdapter
+    private static final String FIELD_OBJ_ACTIVITY = "a";  // CLASS_ThemesListAdapter
 
     //* string resources we are interested in
     public static final String LETTER_KEY_BOTTOM_TEXT_SCALE = "letter_key_bottom_text_scale";
@@ -80,7 +91,7 @@ public class Swiftkey {
     public static final String LETTER_PREVIEW_POPUP_TEXT_SCALE = "letter_preview_popup_text_scale";
     public static final String THEMES_CURRENT_TITLE = "themes_current_title";
 
-    public static String getClassNameForPackage(String clazz) {
+    public static String getClassField(String clazz) {
         try {
             Field field = Swiftkey.class.getDeclaredField("CLASS_" + clazz);
             clazz = (String) field.get(field);
@@ -90,14 +101,52 @@ public class Swiftkey {
         return clazz;
     }
 
-    public static String getMethodNameForPackage(String method) {
+    public static String getMethodField(String method, boolean beta) {
+        Field field = null;
         try {
-            Field field = Swiftkey.class.getDeclaredField("METHOD_" + method);
+            if (beta) {
+                field = Swiftkey.class.getDeclaredField("METHOD_" + method + "_BETA");
+            }else {
+                throw new NoSuchFieldException();
+            }
+        }catch (NoSuchFieldException e){
+            try {
+                field = Swiftkey.class.getDeclaredField("METHOD_" + method);
+            } catch (NoSuchFieldException e1) {
+                e1.printStackTrace();
+            }
+        }
+        try {
+            assert field != null;
             method = (String) field.get(field);
-        } catch (Throwable e) {
+        } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
         return method;
+    }
+
+    public static String getFieldField(String fld, boolean beta) {
+        Field field = null;
+        try {
+            if (beta) {
+                field = Swiftkey.class.getDeclaredField("FIELD_" + fld + "_BETA");
+            }else {
+                throw new NoSuchFieldException();
+            }
+        }catch (NoSuchFieldException e){
+            try {
+                field = Swiftkey.class.getDeclaredField("FIELD_" + fld);
+            } catch (NoSuchFieldException e1) {
+                e1.printStackTrace();
+            }
+        }
+        try {
+            assert field != null;
+            fld = (String) field.get(field);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return fld;
     }
 
     public static boolean setClassFieldFor(String[] fieldValue) {
