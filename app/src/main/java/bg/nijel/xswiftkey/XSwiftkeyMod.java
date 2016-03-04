@@ -1,7 +1,6 @@
 package bg.nijel.xswiftkey;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -374,8 +373,8 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                             BaseAdapter adapter = (BaseAdapter) getObjectField(param.thisObject, getFieldFor("OBJ_ADAPTER"));
                             Object storeImageData = adapter.getItem(getIntField(param.thisObject, getFieldFor("INT_STORE_IMAGE_DATA"))); //get selected theme from adapter
                             selectedThemeId = (String) callMethod(storeImageData, getMethodFor("CALL_SELECTED_THEME_ID")); // get selected theme ID
-                            Activity activity = (Activity) getObjectField(adapter, getFieldFor("OBJ_ACTIVITY"));
-                            Context swiftContext = activity.getApplicationContext();
+                            View v = (View) param.args[0];
+                            Context swiftContext = v.getContext();
                             saveCurrentThemeId(swiftContext, SaveThemeIdIntentService.SAVE_CURRENT_THEME);
                             if (myPrefs.getBoolean(XSwiftkeyActivity.KEY_DEBUG, false)) {
                                 Log.d("Xposed", "xswiftkey ONCLICK THEME: " + selectedThemeId);

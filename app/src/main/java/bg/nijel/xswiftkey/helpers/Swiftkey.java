@@ -79,11 +79,10 @@ public class Swiftkey {
     private static final String CLASS_ThemesListAdapter = null/*"com.touchtype.materialsettings.themessettings.e"*/;
     private static final String METHOD_ON_CLICK = "onClick";  // args [View.class]
 
-    private static final String METHOD_CALL_SELECTED_THEME_ID = "a";  // args []
+    private static final String METHOD_CALL_SELECTED_THEME_ID = "a";  // args []; com.touchtype.materialsettings.themessettings.a.i
 
     private static final String FIELD_OBJ_ADAPTER = "c";  // CLASS_ThemesListAdapter
     private static final String FIELD_INT_STORE_IMAGE_DATA = "a";  // CLASS_ThemesListAdapter
-    private static final String FIELD_OBJ_ACTIVITY = "a";  // CLASS_ThemesListAdapter
 
     //* string resources we are interested in
     public static final String LETTER_KEY_BOTTOM_TEXT_SCALE = "letter_key_bottom_text_scale";
