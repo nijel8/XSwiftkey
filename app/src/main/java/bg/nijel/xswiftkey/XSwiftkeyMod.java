@@ -302,12 +302,9 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                                     }
                                     if (sha == null) {
                                         param.setResult(null);
-                                    }
-                                }
-
-                                protected void afterHookedMethod(final XC_MethodHook.MethodHookParam param) throws Throwable {
-                                    if (myPrefs.getBoolean(XSwiftkeyActivity.KEY_DEBUG, false) && param.getResult() == null) {
-                                        Log.d("Xposed", "xswiftkey MY THEME -> No unzip and sumcheck...");
+                                        if (myPrefs.getBoolean(XSwiftkeyActivity.KEY_DEBUG, false)) {
+                                            Log.d("Xposed", "xswiftkey MY THEME -> No unzip and sumcheck...");
+                                        }
                                     }
                                 }
                             });
