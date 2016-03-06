@@ -197,15 +197,17 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                                 protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                                     if (param.args[0] instanceof String) {
                                         String id = (String) param.args[0];
-                                        // File dir = new File(getMyThemesFolder(), id);
-                                        if (isMyTheme(id) && param.args[1].getClass().getName().equals(getClassFor("DownloadedThemeHeader"))) {
-                                            param.setResult(null);
-                                        }
+                                        String sha = (String) callMethod(param.args[1], getMethodFor("CALL_SHA"));
                                         File dir = new File(getMyThemesFolder(), id);
-                                        if (!dir.exists()) {
-                                            param.setResult(null);
-                                            if (myPrefs.getBoolean(XSwiftkeyActivity.KEY_DEBUG, false)) {
-                                                Log.e("Xposed", "xswiftkey THEME ID [" + id + "] exists in themelist.json but not found in themes folder!!! Remove its entry from themelist.");
+                                        if (sha == null) {
+                                            if (isMyTheme(id) && param.args[1].getClass().getName().equals(getClassFor("DownloadedThemeHeader"))) {
+                                                param.setResult(null);
+                                            }
+                                            if (!dir.exists()) {
+                                                param.setResult(null);
+                                                if (myPrefs.getBoolean(XSwiftkeyActivity.KEY_DEBUG, false)) {
+                                                    Log.e("Xposed", "xswiftkey THEME ID [" + id + "] exists in themelist.json but not found in themes folder!!! Remove its entry from themelist.");
+                                                }
                                             }
                                         }
                                     }
@@ -233,8 +235,9 @@ public class XSwiftkeyMod implements IXposedHookInitPackageResources, IXposedHoo
                                         if (!isMyTheme(id) && param.args[1].getClass().getName().equals(getClassFor("PreInstalledThemeHeader"))) {
                                             param.setResult(null);
                                         }
+                                        String sha = (String) callMethod(param.args[1], getMethodFor("CALL_SHA"));
                                         File dir = new File(getMyThemesFolder(), id);
-                                        if (!dir.exists()) {
+                                        if (!dir.exists() && sha == null) {
                                             param.setResult(null);
                                             if (myPrefs.getBoolean(XSwiftkeyActivity.KEY_DEBUG, false)) {
                                                 Log.e("Xposed", "xswiftkey THEME ID [" + id + "] exists in themelist.json but not found in themes folder!!! Remove its entry from themelist.");
