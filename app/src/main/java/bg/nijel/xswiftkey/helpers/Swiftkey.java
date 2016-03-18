@@ -73,7 +73,7 @@ public class Swiftkey {
     private static final String METHOD_DPI_THEME_SUBFOLDER = "a";  // args [DisplayMetrics.class]
 
     private static final String CLASS_ImmutableMap_A = null/*"com.google.common.collect.av.a"*/;
-    private static final String METHOD_THEMES_SET = "b";  // args [Object.class, Object.class]
+    private static final String METHOD_THEMES_SET = "a";  // args [Object.class, Object.class]
     private static final String METHOD_THEMES_SET_BETA = "a";  // args [Object.class, Object.class]
 
     private static final String CLASS_ThemesListAdapter = null/*"com.touchtype.materialsettings.themessettings.e"*/;

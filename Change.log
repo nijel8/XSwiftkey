@@ -1,4 +1,6 @@
 Change log:
+v. 1.14 Fix for latest Swiftkey update.
+
 v. 1.13: Fixed bug failed to apply downloaded themes from Swiftkey store.
 
 v. 1.12: Fix for new Swiftkey Beta update, Now module keeps logging to "/sdcard/Xswiftkey.logcat" if debugging and export is enabled and theme is applied in Swiftkey theme settings saving any errors might occur.
